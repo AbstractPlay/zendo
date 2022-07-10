@@ -37,10 +37,19 @@ import PendingGuess from "./Global/PendingGuess.svelte";
 </script>
 
 <div class="box">
+    <div class="level">
+        <div class="level-item">
+            <p class="content">
+                <a href="https://www.looneylabs.com/content/zendo" target="_NEW">Game Rules</a>
+            </p>
+        </div>
+        <div class="level-item">
+            <p class="content">
+                <a href="https://drive.google.com/drive/folders/0Bw8J0V9P_9hMMzNfQ3E1bFY2REE?resourcekey=0-5Dfs8omE96Run7WgnE5axw&usp=sharing" target="_NEW">Archive of Povray koans</a>
+            </p>
+        </div>
+    </div>
     <div class="content">
-        <p>
-            <a href="https://www.looneylabs.com/content/zendo" target="_NEW">Game Rules</a>
-        </p>
     {#if isStudent}
         <p>It's not your turn yet. Please wait.</p>
     {/if}
