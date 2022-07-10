@@ -1,0 +1,40 @@
+{
+  "name": "@abstractplay/zendo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A peer-to-peer, synchronous client for playing Zendo online",
+  "author": "Aaron Dalton <aaron@daltons.ca> (https://www.perlkonig.com)",
+  "license": "MIT",
+  "keywords": [
+    "abstractplay",
+    "zendo",
+    "induction",
+    "logic",
+    "peer-to-peer"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "npm run schemas && vite",
+    "build": "npm run schemas && vite build",
+    "preview": "npm run build && vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "schemas": "npx json2ts -i src/schemas/messages.json -o src/schemas/messages.d.ts && npx json2ts -i src/schemas/game.json -o src/schemas/game.d.ts"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "@tsconfig/svelte": "^2.0.1",
+    "json-schema-to-typescript": "^11.0.1",
+    "svelte": "^3.44.0",
+    "svelte-check": "^2.2.7",
+    "svelte-preprocess": "^4.9.8",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "katex": "^0.16.0",
+    "peerjs": "^1.4.6",
+    "svelte-markdown": "^0.2.2"
+  }
+}

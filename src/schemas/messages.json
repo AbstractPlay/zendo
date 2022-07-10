@@ -1,0 +1,102 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$id": "https://www.abstractplay.com/schemas/zendo/messages/1-0-0.json#",
+    "title": "Zendo Game Messages",
+    "description": "Permissible messages to be passed between peers",
+    "definitions": {
+    },
+    "type": "object",
+    "oneOf": [
+        {
+            "description": "Set preferred display name",
+            "properties": {
+                "type": {
+                    "enum": ["display"]
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": ["type", "name"],
+            "additionalProperties": false
+        },
+        {
+            "description": "Share list of peers",
+            "properties": {
+                "type": {
+                    "enum": ["peers"]
+                },
+                "peers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["type", "peers"],
+            "additionalProperties": false
+        },
+        {
+            "description": "Send a text chat (only text to avoid links, images, and junk)",
+            "properties": {
+                "type": {
+                    "enum": ["chat"]
+                },
+                "msg": {
+                    "type": "string"
+                }
+            },
+            "required": ["type", "msg"],
+            "additionalProperties": false
+        },
+        {
+            "description": "Ask a peer to resend their display name",
+            "properties": {
+                "type": {
+                    "enum": ["askdisplay"]
+                }
+            },
+            "required": ["type"],
+            "additionalProperties": false
+        },
+        {
+            "description": "Replace your existing game object with the attached",
+            "properties": {
+                "type": {
+                    "enum": ["gameReplace"]
+                },
+                "game": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                }
+            },
+            "required": ["type", "game"],
+            "additionalProperties": false
+        },
+        {
+            "description": "Notify that you are abandoning the game",
+            "properties": {
+                "type": {
+                    "enum": ["notifyAbandon"]
+                }
+            },
+            "required": ["type"],
+            "additionalProperties": false
+        },
+        {
+            "description": "Announce your vote",
+            "properties": {
+                "type": {
+                    "enum": ["vote"]
+                },
+                "vote": {
+                    "type": "boolean"
+                }
+            },
+            "required": ["type", "vote"],
+            "additionalProperties": false
+        }
+    ]
+}

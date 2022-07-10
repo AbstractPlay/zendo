@@ -1,0 +1,156 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$id": "https://www.abstractplay.com/schemas/zendo/game/1-0-0.json#",
+    "title": "Zendo Game State",
+    "description": "Representation of Zendo game state",
+    "definitions": {
+    },
+    "type": "object",
+    "properties": {
+        "master": {
+            "description": "Peer ID of the game master",
+            "type": "string"
+        },
+        "students": {
+            "description": "List of peer IDs granted student status, along with their guessing stone counts",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "Peer ID",
+                        "type": "string"
+                    },
+                    "guesses": {
+                        "description": "Number of available guesses",
+                        "type": "number",
+                        "minimum": 0,
+                        "default": 0
+                    }
+                },
+                "required": ["id", "guesses"],
+                "additionalProperties": false
+            }
+        },
+        "koanType": {
+            "description": "The type of koans accepted. All koans are fundamentally strings, but this will determine how those strings are interpreted and displayed.",
+            "enum": ["text", "image", "math"]
+        },
+        "welcome": {
+            "description": "Optional notes that will be pinned to the top of the game screen. Use to establish any ground rules.",
+            "type": "string"
+        },
+        "rule": {
+            "description": "The secret rule chosen by the master. This is available to all players, so it should be obfuscated in some way.",
+            "type": "string"
+        },
+        "guesses": {
+            "description": "List of guesses",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "student": {
+                        "description": "Peer ID of guessing student",
+                        "type": "string"
+                    },
+                    "index": {
+                        "description": "The number of koans in play at the time the guess was tendered",
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "guess": {
+                        "description": "The guess itself, as accepted by the master",
+                        "type": "string"
+                    }
+                },
+                "required": ["student", "index", "guess"],
+                "additionalProperties": false
+            }
+        },
+        "guessPending": {
+            "description": "Describes the an active guess that has not yet been accepted by the master",
+            "type": "object",
+            "properties": {
+                "guess": {
+                    "description": "The guess itself",
+                    "type": "string"
+                },
+                "student": {
+                    "description": "The ID of the student profering the guess",
+                    "type": "string"
+                }
+            },
+            "required": ["guess", "student"],
+            "additionalProperties": false
+        },
+        "currplayer": {
+            "description": "The ID of the person whose turn it currently is.",
+            "type": "string"
+        },
+        "koans": {
+            "description": "The complete list of koans",
+            "type": "array",
+            "items": {
+                "description": "The actual koan object.",
+                "type": "object",
+                "properties": {
+                    "string": {
+                        "description": "The string representation of the koan, interpreted based on the global `koanType` definition.",
+                        "type": "string"
+                    },
+                    "htbn": {
+                        "description": "Whether or not this koan 'has the Buddha nature'",
+                        "type": "boolean"
+                    }
+                },
+                "required": ["string", "htbn"],
+                "additionalProperties": false
+            }
+        },
+        "koanPending": {
+            "description": "Describes the a single koan being submitted for review, including its state",
+            "type": "object",
+            "properties": {
+                "koan": {
+                    "description": "The koan itself",
+                    "type": "string"
+                },
+                "call": {
+                    "description": "Whether 'master' or 'mondo' requested",
+                    "enum": ["master", "mondo"]
+                },
+                "votes": {
+                    "description": "The list of votes submitted",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "student": {
+                                "description": "Peer ID of voting student",
+                                "type": "string"
+                            },
+                            "vote": {
+                                "description": "The vote itself",
+                                "type": "boolean"
+                            }
+                        },
+                        "required": ["student", "vote"],
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "required": ["koan", "call"],
+            "additionalProperties": false
+        },
+        "winner": {
+            "description": "The ID of the winning player",
+            "oneOf": [
+                {"type": "string"},
+                {"type": "null"}
+            ]
+        }
+    },
+    "required": [],
+    "additionalProperties": false
+}
