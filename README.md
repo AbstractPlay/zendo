@@ -2,6 +2,8 @@
 
 This is a single-page, peer-to-peer, synchronous client for playing [Zendo](https://www.looneylabs.com/content/zendo) online. There is no central server except to connect peers. Once connected, all data transfers happen directly between peers.
 
+Demo is currently at <https://www.perlkonig.com/zendo>.
+
 ## How It Works
 
 When first opening the page, it creates a new game lobby and provides a client ID. One person needs to share that ID with their friends.

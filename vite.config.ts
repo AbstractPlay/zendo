@@ -14,6 +14,7 @@ export default defineConfig({
   define: {
     '__APP_VERSION__': JSON.stringify(pkg.version),
   },
+  base: process.env.NODE_ENV === 'production' ? '/zendo/' : '/',
   resolve: {
     alias: [
       {
