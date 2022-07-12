@@ -43,7 +43,7 @@
         {#if $game.koanType === "image"}
             <p>This is an image dojo.</p>
         {:else if $game.koanType === "math"}
-            <p>This is a math dojo (powered by <a href="https://katex.org/" target="_NEW">KaTeX</a>).</p>
+            <p>This is a math dojo (powered by <a href="https://katex.org/">KaTeX</a>).</p>
         {:else}
             <p>This is a text dojo.</p>
         {/if}

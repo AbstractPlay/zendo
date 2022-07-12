@@ -41,6 +41,12 @@
         $game = $game;
         pushGame();
     };
+
+    const rejectKoan = () => {
+        delete $game.koanPending;
+        $game = $game;
+        pushGame();
+    };
 </script>
 
 {#if $game.hasOwnProperty("koanPending")}
@@ -63,6 +69,7 @@
         <div class="card-footer">
             <button class="button is-success card-footer-item" on:click="{() => markKoan(true)}">Has</button>
             <button class="button is-danger card-footer-item" on:click="{() => markKoan(false)}">Has NOT</button>
+            <button class="button card-footer-item" on:click="{rejectKoan}">Reject Koan</button>
         </div>
     {/if}
 </section>

@@ -48,7 +48,7 @@
 
 <div class="box">
     <p class="content">
-        It is your turn. You must add a koan and then may optionally make a guess if you have any guessing stones. When you're done, click "End Turn"
+        It is your turn. You must add a koan and then may optionally make a guess if you have any guessing stones. When you're done, click "End Turn."
     </p>
 {#if (! $game.hasOwnProperty("koanPending"))}
     <AddKoan/>

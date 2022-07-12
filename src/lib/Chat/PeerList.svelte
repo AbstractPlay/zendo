@@ -45,7 +45,7 @@
         Click to copy the ID to the clipboard.
     </p>
     {#each $peers as p}
-        <a class="panel-block" href={"#"} data-tooltip="{p.id}" on:click="{() => copyTextToClipboard(p.id)}">
+        <a target="_self" class="panel-block" href={"#"} data-tooltip="{p.id}" on:click="{() => copyTextToClipboard(p.id)}">
         {#if p.locked}
             <span class="panel-icon">
                 <i class="fa-solid fa-lock" aria-hidden="true"></i>

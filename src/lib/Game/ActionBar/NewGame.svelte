@@ -24,7 +24,7 @@
 
 <div class="box">
     <p class="content">
-        <a href="https://www.looneylabs.com/content/zendo" target="_NEW">Game Rules</a>
+        <a href="https://www.looneylabs.com/content/zendo">Game Rules</a>
     </p>
     <p class="control">
         <button class="button" on:click="{becomeMaster}">

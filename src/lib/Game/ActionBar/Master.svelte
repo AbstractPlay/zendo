@@ -74,17 +74,23 @@
     <div class="card" id="instructionBox">
         <header class="card-header">
             <p class="card-header-title">Instructions</p>
-            <a href={"#"} class="card-header-icon" aria-label="toggle instructions" title="toggle instructions" on:click="{() => expandInstructions = !expandInstructions}">
+            <button class="card-header-icon" aria-label="toggle instructions" title="toggle instructions" on:click="{() => expandInstructions = !expandInstructions}">
+            {#if expandInstructions}
                 <span class="icon">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                 </span>
-            </a>
+            {:else}
+                <span class="icon">
+                    <i class="fa-solid fa-angle-left" aria-hidden="true"></i>
+                </span>
+            {/if}
+            </button>
         </header>
     {#if expandInstructions}
         <div class="card-content content">
-            <p>You can invite people to your dojo immediately. It's recommended to include a short welcome message that lays out the ground rules for the game, including the exact nature of the koans. You can use <a href="https://www.markdownguide.org/basic-syntax" target="_NEW">Markdown</a> format to add links if helpful.</p>
+            <p>You can invite people to your dojo immediately. It's recommended to include a short welcome message that lays out the ground rules for the game, including the exact nature of the koans. You can use <a href="https://www.markdownguide.org/basic-syntax">Markdown</a> format to add links if helpful.</p>
 
-            <p>The hardest part about being master is choosing a rule that is the right difficulty. Read <a href="https://www.looneylabs.com/content/zendo" target="_NEW">Looney Labs's Zendo rules page for a downloadable PDF with good guidance for budding masters.</a></p>
+            <p>The hardest part about being master is choosing a rule that is the right difficulty. Read <a href="https://www.looneylabs.com/content/zendo">Looney Labs's Zendo rules page for a downloadable PDF with good guidance for budding masters.</a></p>
 
             <p>As people join, you can add them as students. Once you've added your initial two koans, you can select a starting player and the game will try to automatically keep the player order going, but you can assign the current player at any time.</p>
         </div>
@@ -139,7 +145,7 @@
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"math"}>
-            Math koans (powered by <a href="https://katex.org/" target="_NEW">KaTeX</a>)
+            Math koans (powered by <a href="https://katex.org/">KaTeX</a>)
         </label>
     </div>
     <p class="control">

@@ -4,7 +4,7 @@
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
     import MarkKoan from "./Global/MarkKoan.svelte";
-import PendingGuess from "./Global/PendingGuess.svelte";
+    import PendingGuess from "./Global/PendingGuess.svelte";
 
     let modalAbandon = "";
     const abandonGame = () => {
@@ -40,14 +40,16 @@ import PendingGuess from "./Global/PendingGuess.svelte";
     <div class="level">
         <div class="level-item">
             <p class="content">
-                <a href="https://www.looneylabs.com/content/zendo" target="_NEW">Game Rules</a>
+                <a href="https://www.looneylabs.com/content/zendo">Game Rules</a>
             </p>
         </div>
+    {#if ( ($game.hasOwnProperty("koanType")) && ($game.koanType === "image") )}
         <div class="level-item">
             <p class="content">
-                <a href="https://drive.google.com/drive/folders/0Bw8J0V9P_9hMMzNfQ3E1bFY2REE?resourcekey=0-5Dfs8omE96Run7WgnE5axw&usp=sharing" target="_NEW">Archive of Povray koans</a>
+                <a href="https://drive.google.com/drive/folders/0Bw8J0V9P_9hMMzNfQ3E1bFY2REE?resourcekey=0-5Dfs8omE96Run7WgnE5axw&usp=sharing">Archive of Povray koans</a>
             </p>
         </div>
+    {/if}
     </div>
     <div class="content">
     {#if isStudent}

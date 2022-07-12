@@ -88,7 +88,7 @@
                 </div>
                 <p class="help">
                 {#if $game.koanType === "math"}
-                    No delimiters are needed. Just enter the formula using <a href="https://katex.org/docs/supported.html" target="_NEW">supported TeX or LaTeX notation</a>.
+                    No delimiters are needed. Just enter the formula using <a href="https://katex.org/docs/supported.html">supported TeX or LaTeX notation</a>.
                 {:else if $game.koanType === "image"}
                     Images must be square.
                 {/if}
