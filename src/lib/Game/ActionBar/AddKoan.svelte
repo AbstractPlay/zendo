@@ -9,9 +9,11 @@
     let koanStr = "";
     let placeholder = "Text koans are presented exactly as entered";
     if ($game.koanType === "image") {
-        placeholder = "Drop your image on the field above to generate this string."
+        placeholder = "Drop your image on the field above to generate this string"
     } else if ($game.koanType === "math") {
         placeholder = "Enter in TeX or LaTeX format, without delimiters"
+    } else if ($game.koanType === "2dpyramids") {
+        placeholder = "Enter a series of pyramid designations separated by whitespace";
     }
 
     let files: FileList;
@@ -41,6 +43,7 @@
     let hasNature = false;
     let call: "master" | "mondo" = "master";
     const submitKoan = () => {
+        koanStr = koanStr.replace(/\s+$/, "");
         // If master is submitting it, go directly to the play area.
         if ($game.master === $peer.id) {
             if (! $game.hasOwnProperty("koans")) {
@@ -60,6 +63,28 @@
         koanStr = "";
         files = undefined;
     };
+
+    let typeDesc = $game.koanType.charAt(0).toUpperCase() + $game.koanType.slice(1);
+    if ($game.koanType === "2dpyramids") {
+        typeDesc = "2D Pyramid";
+    }
+
+    const colours = new Map<string, string>([
+        ["RD", "#e41a1c"],
+        ["GN", "#4daf4a"],
+        ["BU", "#377eb8"],
+        ["YE", "#ffff33"],
+        ["VT", "#984ea3"],
+        ["OG", "#ff7f00"],
+        ["BN", "#a65628"],
+        ["PK", "#f781bf"],
+        ["GY", "#999999"],
+        ["WH", "#ffffff"],
+    ]);
+    let colourSamples: string[] = [];
+    for (const c of colours) {
+        colourSamples.push(`<code style="background-color: ${c[1]}; color: black;">${c[0]}</code>`);
+    }
 </script>
 
 <p class="control">
@@ -72,7 +97,7 @@
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Add {$game.koanType.charAt(0).toUpperCase() + $game.koanType.slice(1)} Koan</p>
+            <p class="modal-card-title">Add {typeDesc} Koan</p>
         </header>
         <section class="modal-card-body">
             <div class="field">
@@ -86,14 +111,27 @@
                 <div class="control">
                     <input class="input" type="text" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}">
                 </div>
+            {#if $game.koanType === "math"}
                 <p class="help">
-                {#if $game.koanType === "math"}
                     No delimiters are needed. Just enter the formula using <a href="https://katex.org/docs/supported.html">supported TeX or LaTeX notation</a>.
-                {:else if $game.koanType === "image"}
-                    Images must be square.
-                {/if}
                 </p>
+            {:else if $game.koanType === "image"}
+                <p class="help">
+                    Images must be square.
+                </p>
+            {:else if $game.koanType === "2dpyramids"}
+                <div class="help">
+                    <p>
+                        COLOUR + SIZE + DIRECTION (case insensitive); for example "RD1", "BN2E", "VT3S"
+                    </p>
+                </div>
+            {/if}
             </div>
+        {#if $game.koanType === "2dpyramids"}
+            <p>
+                Available colours: {@html colourSamples.join(", ")}.
+            </p>
+        {/if}
         {#if $game.master === $peer.id}
             <div class="field">
                 <label class="checkbox">

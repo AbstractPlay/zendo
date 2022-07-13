@@ -29,7 +29,7 @@ export interface ZendoGameState {
   /**
    * The type of koans accepted. All koans are fundamentally strings, but this will determine how those strings are interpreted and displayed.
    */
-  koanType?: "text" | "image" | "math";
+  koanType?: "text" | "image" | "math" | "2dpyramids";
   /**
    * Optional notes that will be pinned to the top of the game screen. Use to establish any ground rules.
    */
