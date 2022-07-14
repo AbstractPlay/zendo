@@ -4,6 +4,7 @@
     import { peer } from "@/stores/writePeerObj";
     import { peers } from "@/stores/writePeers";
     import type { ZendoGameMessages } from "@/schemas/messages";
+    import { graphviz } from "node-graphviz";
 
     // You can provide either a number or a string, but not both.
     // Passing a number assumes the koan already exists in the game object.
@@ -253,6 +254,16 @@
         {:else if $game.koanType === "dotmatrix"}
             <figure class="koan dotmatrixkoan">
                 {@html svgResults}
+            </figure>
+        {:else if $game.koanType === "graphviz"}
+            <figure class="koan graphkoan">
+            {#await graphviz.dot(koanStr, "svg")}
+                Rendering...
+            {:then svg}
+                {@html svg}
+            {:catch err}
+                Error: {err}
+            {/await}
             </figure>
         {:else}
             <figure class="koan text-koan content">

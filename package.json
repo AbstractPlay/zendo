@@ -1,7 +1,7 @@
 {
   "name": "@abstractplay/zendo",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A peer-to-peer, synchronous client for playing Zendo online",
   "author": "Aaron Dalton <aaron@daltons.ca> (https://www.perlkonig.com)",
   "license": "MIT",
@@ -34,6 +34,7 @@
   "dependencies": {
     "buffer": "^6.0.3",
     "katex": "^0.16.0",
+    "node-graphviz": "github:JosephusPaye/node-graphviz",
     "peerjs": "^1.4.6",
     "svelte-markdown": "^0.2.2"
   }

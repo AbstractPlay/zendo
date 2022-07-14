@@ -16,6 +16,8 @@
         placeholder = "Enter a series of pyramid designations separated by whitespace";
     } else if ($game.koanType === "dotmatrix") {
         placeholder = "Enter width, height, and then a string of digits";
+    } else if ($game.koanType === "graphviz") {
+        placeholder = "Type or paste your DOT code"
     }
 
     let files: FileList;
@@ -71,6 +73,8 @@
         typeDesc = "1D Pyramid";
     } else if ($game.koanType === "dotmatrix") {
         typeDesc = "Dot Matrix";
+    } else if ($game.koanType === "graphviz") {
+        typeDesc = "GraphViz";
     }
 
     const colours = new Map<string, string>([
@@ -112,9 +116,15 @@
                 </div>
             {/if}
                 <label class="label" for="koanStr">Koan String</label>
+            {#if $game.koanType === "graphviz"}
+                <div class="control">
+                    <textarea class="input" type="text" rows="3" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}"></textarea>
+                </div>
+            {:else}
                 <div class="control">
                     <input class="input" type="text" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}">
                 </div>
+            {/if}
             {#if $game.koanType === "math"}
                 <p class="help">
                     No delimiters are needed. Just enter the formula using <a href="https://katex.org/docs/supported.html">supported TeX or LaTeX notation</a>.
@@ -133,6 +143,10 @@
                 </p>
                 <p class="help">
                     The digit <code>0</code> is an empty cell, <code>1</code> is black, and the digits <code>2–9</code> give a sequence of different colours.
+                </p>
+            {:else if $game.koanType === "graphviz"}
+                <p class="help">
+                    <a href="https://graphviz.org/doc/info/lang.html">DOT language reference</a>
                 </p>
             {/if}
             </div>
