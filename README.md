@@ -19,7 +19,7 @@ There are four dojo types currently supported:
 * plain text (koans are displayed as entered)
 * images (drag and drop square image files)
 * math (powered by [KaTeX](https://katex.org/), using TeX/LaTeX notation)
-* 2d pyramids (custom notation for creating two-dimensional koans with [Looney pyramids](https://www.looneylabs.com/pyramids-home))
+* 1d pyramids (custom notation for creating one-dimensional koans with [Looney pyramids](https://www.looneylabs.com/pyramids-home))
 
 ## Caveats
 

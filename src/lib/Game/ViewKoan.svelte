@@ -142,7 +142,7 @@
     };
 
     let svgResults: string;
-    if ($game.koanType === "2dpyramids") {
+    if ($game.koanType === "1dpyramids") {
         svgResults = processSvg();
     }
 
@@ -190,7 +190,7 @@
             <figure class="koan">
                 <p>{@html equation}</p>
             </figure>
-        {:else if $game.koanType === "2dpyramids"}
+        {:else if $game.koanType === "1dpyramids"}
             <figure class="koan pyramidkoan">
                 {@html svgResults}
             </figure>

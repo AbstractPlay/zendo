@@ -10,7 +10,7 @@
   <Header/>
   <Status/>
   <div class="columns">
-    <div class="column is-two-thirds">
+    <div class="column is-three-quarters">
       <Game/>
     </div>
     <div class="column">

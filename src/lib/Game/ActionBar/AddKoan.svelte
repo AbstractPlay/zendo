@@ -12,7 +12,7 @@
         placeholder = "Drop your image on the field above to generate this string"
     } else if ($game.koanType === "math") {
         placeholder = "Enter in TeX or LaTeX format, without delimiters"
-    } else if ($game.koanType === "2dpyramids") {
+    } else if ($game.koanType === "1dpyramids") {
         placeholder = "Enter a series of pyramid designations separated by whitespace";
     }
 
@@ -65,8 +65,8 @@
     };
 
     let typeDesc = $game.koanType.charAt(0).toUpperCase() + $game.koanType.slice(1);
-    if ($game.koanType === "2dpyramids") {
-        typeDesc = "2D Pyramid";
+    if ($game.koanType === "1dpyramids") {
+        typeDesc = "1D Pyramid";
     }
 
     const colours = new Map<string, string>([
@@ -119,7 +119,7 @@
                 <p class="help">
                     Images must be square.
                 </p>
-            {:else if $game.koanType === "2dpyramids"}
+            {:else if $game.koanType === "1dpyramids"}
                 <div class="help">
                     <p>
                         COLOUR + SIZE + DIRECTION (case insensitive); for example "RD1", "BN2E", "VT3S"
@@ -127,7 +127,7 @@
                 </div>
             {/if}
             </div>
-        {#if $game.koanType === "2dpyramids"}
+        {#if $game.koanType === "1dpyramids"}
             <p>
                 Available colours: {@html colourSamples.join(", ")}.
             </p>
