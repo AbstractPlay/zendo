@@ -77,7 +77,7 @@
     <div class="card-content">
         <div class="field">
             <input class="input" type="text" id="displayName" bind:value="{$myName}">
-            <button class="button is-primary" on:click="{saveDisplayName}">Update your display name</button>
+            <button class="button is-light" on:click="{saveDisplayName}">Update your display name</button>
         </div>
         <p class="content">Click on a peer to rename them.</p>
         <div class="panel">

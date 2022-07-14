@@ -52,7 +52,7 @@
     {/if}
     </div>
     <div class="content">
-    {#if isStudent}
+    {#if ( (isStudent) && ($game.currplayer !== $peer.id) )}
         <p>It's not your turn yet. Please wait.</p>
     {/if}
     </div>
