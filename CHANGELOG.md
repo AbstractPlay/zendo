@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Removed
+
+* Stripped out the inter-client chat feature. Players have to find each other using external means anyway. The intent is just to make it possible to moderate a remote synchronous game, and it is expected that players will be on Discord or something. It also frees up more horizontal space for koans.
+
 ## [0.2.1] - 2022-07-14
 
 ### Added

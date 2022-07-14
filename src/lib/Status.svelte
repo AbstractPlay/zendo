@@ -3,8 +3,6 @@
     import { peer } from "../stores/writePeerObj";
     import { peers } from "../stores/writePeers";
     import type { PeerRecord } from "../stores/writePeers";
-    import { chatlog } from "../stores/writeChat";
-    import type { ChatRecord } from "../stores/writeChat";
     import type { DataConnection } from "peerjs";
     import type { ZendoGameMessages } from "../schemas/messages";
     import { game } from "../stores/writeGame";
@@ -21,12 +19,6 @@
     };
 
     const updatePeers = (lst: PeerRecord[], conn: DataConnection): PeerRecord[] => {
-        const entry: ChatRecord = {
-            time: Math.floor(Date.now() / 1000),
-            msg: `Peer ${conn.peer} has connected to you.`
-        };
-        chatlog.update((log) => [...log, entry]);
-
         // Update the actual list of peers
         const idx = lst.findIndex((rec) => rec.id === conn.peer);
         const newlst = [...lst];
@@ -42,11 +34,6 @@
         // Add handlers
         conn.on("data", (data) => handleMsg(data as ZendoGameMessages, conn.peer));
         conn.on("close", () => {
-            const entry: ChatRecord = {
-                time: Math.floor(Date.now() / 1000),
-                msg: conn.peer + " has disconnected."
-            };
-            chatlog.update((log) => [...log, entry]);
             peers.update((lst) => deletePeer(lst, conn.peer));
             if ($game.hasOwnProperty("students")) {
                 const idx = $game.students.findIndex(s => s.id === conn.peer);
@@ -149,11 +136,6 @@
                     }
                     return [...lst];
                 });
-                const entry: ChatRecord = {
-                    time: Math.floor(Date.now() / 1000),
-                    msg: `Peer ${peerid} set their display name to "${msg.name}".`
-                };
-                chatlog.update((log) => [...log, entry]);
             } else if (msg.type === "peers") {
                 for (const p of msg.peers) {
                     if (p === $peer.id) { continue; }
@@ -162,13 +144,6 @@
                         joinPeer(p);
                     }
                 }
-            } else if (msg.type === "chat") {
-                const entry: ChatRecord = {
-                    source: id2name(peerid),
-                    time: Math.floor(Date.now() / 1000),
-                    msg: msg.msg
-                };
-                chatlog.update((log) => [...log, entry]);
             } else if (msg.type === "askdisplay") {
                 const reply: ZendoGameMessages = {
                     type: "display",
@@ -177,12 +152,6 @@
                 sendDirectMsg(peerid, reply);
             } else if (msg.type === "gameReplace") {
                 $game = JSON.parse(msg.game) as ZendoGameState;
-            } else if (msg.type === "notifyAbandon") {
-                const entry: ChatRecord = {
-                    time: Math.floor(Date.now() / 1000),
-                    msg: `${id2name(peerid)} is abandoning the game. They will see the secret rule.`
-                };
-                chatlog.update((log) => [...log, entry]);
             } else if (msg.type === "vote") {
                 if ($game.hasOwnProperty("koanPending")) {
                     if (! $game.koanPending.hasOwnProperty("votes")) {
