@@ -44,6 +44,10 @@
             <p>This is an image dojo.</p>
         {:else if $game.koanType === "math"}
             <p>This is a math dojo (powered by <a href="https://katex.org/">KaTeX</a>).</p>
+        {:else if $game.koanType === "1dpyramids"}
+            <p>This is a 1D pyramid dojo.</p>
+        {:else if $game.koanType === "dotmatrix"}
+            <p>This is a dot matrix dojo.</p>
         {:else}
             <p>This is a text dojo.</p>
         {/if}

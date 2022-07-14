@@ -14,12 +14,13 @@ Once connected, players have access to a basic text chat window and the rest of 
 
 ## Dojo Types
 
-There are four dojo types currently supported:
+There are five dojo types currently supported:
 
 * plain text (koans are displayed as entered)
 * images (drag and drop square image files)
 * math (powered by [KaTeX](https://katex.org/), using TeX/LaTeX notation)
-* 1d pyramids (custom notation for creating one-dimensional koans with [Looney pyramids](https://www.looneylabs.com/pyramids-home))
+* 1d pyramids (one-dimensional koans with [Looney pyramids](https://www.looneylabs.com/pyramids-home))
+* dot matrix (coloured dots on rectangular grids)
 
 ## Caveats
 

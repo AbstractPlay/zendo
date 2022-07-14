@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Added peer count to new peer list.
+* Added the dot matrix dojo type.
+
 ### Removed
 
 * Stripped out the inter-client chat feature. Players have to find each other using external means anyway. The intent is just to make it possible to moderate a remote synchronous game, and it is expected that players will be on Discord or something. It also frees up more horizontal space for koans.

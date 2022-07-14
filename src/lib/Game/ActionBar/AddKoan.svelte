@@ -14,6 +14,8 @@
         placeholder = "Enter in TeX or LaTeX format, without delimiters"
     } else if ($game.koanType === "1dpyramids") {
         placeholder = "Enter a series of pyramid designations separated by whitespace";
+    } else if ($game.koanType === "dotmatrix") {
+        placeholder = "Enter width, height, and then a string of digits";
     }
 
     let files: FileList;
@@ -67,6 +69,8 @@
     let typeDesc = $game.koanType.charAt(0).toUpperCase() + $game.koanType.slice(1);
     if ($game.koanType === "1dpyramids") {
         typeDesc = "1D Pyramid";
+    } else if ($game.koanType === "dotmatrix") {
+        typeDesc = "Dot Matrix";
     }
 
     const colours = new Map<string, string>([
@@ -120,11 +124,16 @@
                     Images must be square.
                 </p>
             {:else if $game.koanType === "1dpyramids"}
-                <div class="help">
-                    <p>
-                        COLOUR + SIZE + DIRECTION (case insensitive); for example "RD1", "BN2E", "VT3S"
-                    </p>
-                </div>
+                <p class="help">
+                    COLOUR + SIZE + DIRECTION (case insensitive); for example "RD1", "BN2E", "VT3S"
+                </p>
+            {:else if $game.koanType === "dotmatrix"}
+                <p class="help">
+                    WIDTH,HEIGHT,CELLS (e.g., 2,2,1001)
+                </p>
+                <p class="help">
+                    The digit <code>0</code> is an empty cell, <code>1</code> is black, and the digits <code>2–9</code> give a sequence of different colours.
+                </p>
             {/if}
             </div>
         {#if $game.koanType === "1dpyramids"}
