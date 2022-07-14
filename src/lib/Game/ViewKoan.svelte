@@ -4,6 +4,7 @@
     import { peer } from "@/stores/writePeerObj";
     import { peers } from "@/stores/writePeers";
     import type { ZendoGameMessages } from "@/schemas/messages";
+import CurrPlayer from "./ActionBar/CurrPlayer.svelte";
 
     // You can provide either a number or a string, but not both.
     // Passing a number assumes the koan already exists in the game object.
@@ -63,12 +64,12 @@
         ["GY", "#999999"],
         ["WH", "#ffffff"],
     ]);
-    const processSvg = (): string => {
+    const process1dSvg = (): string => {
         const pieces = koanStr.toUpperCase().split(/\s+/);
         if ( (koanStr === undefined) || (koanStr === "") || (pieces.length === 0) ) {
             return "";
         }
-        let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" viewBox="0 0 ${(pieces.length * 190) - 10} 180" width="100%" height="100%"><defs>`;
+        let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" viewBox="0 0 ${(pieces.length * 190) - 10} 180" width="100%" height="100%"><title>${koanStr}</title><defs>`;
 
         // Process each piece to populate <defs>
         for (const p of pieces) {
@@ -143,7 +144,7 @@
 
     let svgResults: string;
     if ($game.koanType === "1dpyramids") {
-        svgResults = processSvg();
+        svgResults = process1dSvg();
     }
 
     let modalDelete = "";
@@ -211,7 +212,7 @@
                 <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </span>
         {/if}
-        {#if $game.master === $peer.id}
+        {#if ( ($game.master === $peer.id) && (! noExpand) )}
             <button class="button is-normal is-responsive" on:click="{toggleNature}">
                 <span class="icon" aria-label="Toggle Buddha nature" title="Toggle Buddha nature">
                     <i class="fa-solid fa-right-left" aria-hidden="true"></i>
@@ -251,8 +252,15 @@
             <p class="modal-card-title">Expand Koan</p>
         </header>
         <section class="modal-card-body">
-        {#if modalExpand === "is-active"}
-            <svelte:self koanNum={koanNum} noExpand={true}/>
+            <div>
+            {#if modalExpand === "is-active"}
+                <svelte:self koanNum={koanNum} noExpand={true}/>
+            {/if}
+            </div>
+        {#if ( ($game.koanType !== "text") && ($game.koanType !== "image") )}
+            <div>
+                <code>{koanStr}</code>
+            </div>
         {/if}
         </section>
         <footer class="modal-card-foot">

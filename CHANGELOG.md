@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* The expanded koan screen now includes the text used to generate the koan (doesn't apply to image or text koans, but will be applied to any future koan types where text is interpreted).
+* Added `title` element to the SVGs containing the generating string. This should appear on hover in modern browsers.
+
 ### Changed
 
 * Condensed chat bar to make more room for koans.
