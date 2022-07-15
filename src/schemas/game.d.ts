@@ -35,10 +35,6 @@ export interface ZendoGameState {
    */
   welcome?: string;
   /**
-   * The secret rule chosen by the master. This is available to all players, so it should be obfuscated in some way.
-   */
-  rule?: string;
-  /**
    * List of guesses
    */
   guesses?: {

@@ -96,7 +96,7 @@
 </script>
 
 <p class="control">
-    <button class="button" on:click="{() => {modalAdd = "is-active"}}">
+    <button class="button is-primary" on:click="{() => {modalAdd = "is-active"}}">
         Add Koan
     </button>
 </p>

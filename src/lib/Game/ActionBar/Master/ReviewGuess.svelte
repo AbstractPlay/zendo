@@ -100,7 +100,7 @@
     <div class="card-footer">
         <button class="button card-footer-item is-success" on:click="{acceptGuess}">Accept</button>
         <button class="button card-footer-item is-danger" on:click="{rejectGuess}">Reject</button>
-        <button class="button card-footer-item is-warning" on:click="{() => modalWin = "is-active"}">WINNING GUESS!!</button>
+        <button class="button card-footer-item is-warning" on:click="{() => modalWin = "is-active"}">Enlightenment Achieved!!</button>
     </div>
 </div>
 {:else}

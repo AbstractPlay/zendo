@@ -1,7 +1,7 @@
 {
   "name": "@abstractplay/zendo",
   "private": true,
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "A peer-to-peer, synchronous client for playing Zendo online",
   "author": "Aaron Dalton <aaron@daltons.ca> (https://www.perlkonig.com)",
   "license": "MIT",
@@ -10,6 +10,7 @@
     "zendo",
     "induction",
     "logic",
+    "game",
     "peer-to-peer"
   ],
   "type": "module",

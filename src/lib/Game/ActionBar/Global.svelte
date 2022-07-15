@@ -3,8 +3,25 @@
     import { peers } from "@/stores/writePeers";
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
+    import { myName } from "@/stores/writeMyName";
+    import type { ZendoGameState } from "@/schemas/game";
     import MarkKoan from "./Global/MarkKoan.svelte";
     import PendingGuess from "./Global/PendingGuess.svelte";
+
+    const id2name = (id: string): string => {
+        const idx = $peers.findIndex((rec) => rec.id === id);
+        if (idx !== -1) {
+            if ($peers[idx].alias !== undefined) {
+                return $peers[idx].alias;
+            } else {
+                return id;
+            }
+        } else if (id === $peer.id) {
+            return $myName;
+        } else {
+            return id;
+        }
+    };
 
     let modalAbandon = "";
     const abandonGame = () => {
@@ -33,6 +50,27 @@
                 isStudent = true;
             }
         }
+    });
+
+    let modalExport = "";
+    let exportedGame: ZendoGameState;
+    let exportDataStr: string;
+    game.subscribe((obj) => {
+        exportedGame = {} as ZendoGameState;
+        if (obj.hasOwnProperty("koanType")) {
+            exportedGame.koanType = obj.koanType;
+        }
+        if (obj.hasOwnProperty("welcome")) {
+            exportedGame.welcome = obj.welcome;
+        }
+        if (obj.hasOwnProperty("guesses")) {
+            exportedGame.guesses = [...obj.guesses];
+            exportedGame.guesses.map(g => g.student = id2name(g.student));
+        }
+        if (obj.hasOwnProperty("koans")) {
+            exportedGame.koans = [...obj.koans];
+        }
+        exportDataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportedGame));
     });
 </script>
 
@@ -64,12 +102,21 @@
     <PendingGuess/>
 {/if}
 
-    <div class="content space-above">
-        <p class="control">
-            <button class="button" on:click="{() => {modalAbandon = "is-active"}}">
-                Abandon Game
-            </button>
-        </p>
+    <div class="level">
+        <div class="level-item">
+            <p class="control">
+                <button class="button" on:click="{() => {modalExport = "is-active"}}">
+                    Export Game
+                </button>
+            </p>
+        </div>
+        <div class="level-item">
+            <p class="control">
+                <button class="button" on:click="{() => {modalAbandon = "is-active"}}">
+                    Abandon Game
+                </button>
+            </p>
+        </div>
     </div>
 </div>
 
@@ -80,7 +127,7 @@
             <p class="modal-card-title">Are you sure you want to abandon the game?</p>
         </header>
         <section class="modal-card-body">
-            <p>Abandoning the game will cause you to disconnect from all peers. Your version of the game will be marked as terminated so you can see the final game state, including the secret rule if the master entered it. The game will continue for everybody else.</p>
+            <p>Abandoning the game will cause you to disconnect from all peers. Your version of the game will be marked as terminated, but the game will continue for everybody else.</p>
         </section>
         <footer class="modal-card-foot">
             <button class="button is-success" on:click="{abandonGame}">Abandon Game</button>
@@ -89,8 +136,22 @@
     </div>
 </div>
 
+<div class="modal {modalExport}" id="viewExport">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Export Game</p>
+        </header>
+        <section class="modal-card-body">
+            <p class="content">The following code contains all the current koans and guesses of this game. It does not include student names or guessing stone counts. But it's still a useful tool for studying a game or pausing it until later.</p>
+            <p class="content">You can copy and paste the code, or <a href="{exportDataStr}" download="ZendoGame_{(new Date()).toISOString()}.json">click here to download it</a>.</p>
+            <p class="content"><code>{JSON.stringify(exportedGame)}</code></p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" on:click="{() => modalExport = ""}">Close</button>
+        </footer>
+    </div>
+</div>
+
 <style>
-    .space-above {
-        margin-top: 1em;
-    }
 </style>

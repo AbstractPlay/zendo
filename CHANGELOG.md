@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2022-07-15
+
+### Added
+
+* Added export/import feature. This includes all the guesses and koans but not the student list or guessing stone counts. You can export at any time. When the game ends, the code will also be provided.
+
+### Removed
+
+* Removed the secret rule from the game object and from the master's screen. There's no way to truly secure it in a peer-to-peer environment, and the intent of the app is to facilitate synchronous games, where the master shouldn't need a constant reminder. KISS, as they say.
+
 ## [0.4.0] - 2022-07-14
 
 ### Added

@@ -26,23 +26,6 @@
         }
     }
 
-    const obfuscate = (txt: string = ""): string => {
-        return Buffer.from(txt, "binary").toString('base64');
-    };
-    const clarify = (txt: string = ""): string => {
-        return Buffer.from(txt, 'base64').toString('binary');
-    };
-    let ruleCommitted = true;
-    let clearRule = "";
-    game.subscribe((obj) => {clearRule = clarify(obj.rule)});
-    const handleRuleKeydown = (event) => {
-		if (event.key === 'Enter') {
-            $game.rule = obfuscate(clearRule);
-            pushGame();
-            ruleCommitted = true;
-        }
-    };
-
     let selectedObserver = "";
     const admit = () => {
         if (selectedObserver.length > 0) {
@@ -101,13 +84,6 @@
         <div class="control">
             <input class="input {welcomeCommitted ? "is-success" : "is-warning"}" type="text" placeholder="Pinned to the top of the play area. Supports Markdown." id="WelcomeMsg" bind:value="{$game.welcome}" on:keydown="{handleWelcomeKeydown}" on:input="{() => welcomeCommitted = false}">
         </div>
-    </div>
-    <div class="field">
-        <label class="label" for="SecretRule">Secret Rule</label>
-        <div class="control">
-            <input class="input {ruleCommitted ? "is-success" : "is-warning"}" type="text" id="SecretRule" bind:value="{clearRule}" on:keydown="{handleRuleKeydown}" on:input="{() => ruleCommitted = false}">
-        </div>
-        <p class="help">Optional and generally not needed if you're already on a voice connection with everyone. It does make it easy for someone to take over for you, but it also means determined cheaters could see the rule.</p>
     </div>
     {#if $observers.length > 0}
         <div class="field">
