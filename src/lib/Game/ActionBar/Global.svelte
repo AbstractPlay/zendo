@@ -143,9 +143,14 @@
             <p class="modal-card-title">Export Game</p>
         </header>
         <section class="modal-card-body">
-            <p class="content">The following code contains all the current koans and guesses of this game. It does not include student names or guessing stone counts. But it's still a useful tool for studying a game or pausing it until later.</p>
-            <p class="content">You can copy and paste the code, or <a href="{exportDataStr}" download="ZendoGame_{(new Date()).toISOString()}.json">click here to download it</a>.</p>
-            <p class="content"><code>{JSON.stringify(exportedGame)}</code></p>
+            <div class="content">
+                <p>The following code is a record of the game's current state that can be reloaded into the client at a later time for review.</p>
+                <ul>
+                    <li>You can <a href="{exportDataStr}" download="ZendoGame_{(new Date()).toISOString()}.json">click here to download it</a> as a file.</li>
+                    <li>You can copy and paste it:<br><code>{JSON.stringify(exportedGame)}</code></li>
+                    <li>You can save/share this URL for quick access:<br><a href="https://www.perlkonig.com/zendo/?import={encodeURIComponent(JSON.stringify(exportedGame))}"><code>https://www.perlkonig.com/zendo/?import={encodeURIComponent(JSON.stringify(exportedGame))}</code></a></li>
+                </ul>
+            </div>
         </section>
         <footer class="modal-card-foot">
             <button class="button is-success" on:click="{() => modalExport = ""}">Close</button>

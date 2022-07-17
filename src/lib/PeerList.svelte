@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { myName } from "../stores/writeMyName";
-    import { PeerRecord, peers } from "../stores/writePeers";
-    import type { ZendoGameMessages } from "../schemas/messages";
+    import { myName } from "@/stores/writeMyName";
+    import { peers } from "@/stores/writePeers";
+    import type { PeerRecord } from "@/stores/writePeers";
+    import type { ZendoGameMessages } from "@/schemas/messages";
 
     const saveDisplayName = () => {
         // Broadcast your display name

@@ -3,7 +3,19 @@
     import { peer } from "@/stores/writePeerObj";
     import { peers } from "@/stores/writePeers";
     import type { ZendoGameMessages } from "@/schemas/messages";
-import type { ZendoGameState } from "@/schemas/game";
+    import type { ZendoGameState } from "@/schemas/game";
+    import { onMount } from "svelte";
+
+    onMount(() => {
+        $peer.on("open", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasCode = urlParams.has("import");
+            if (hasCode) {
+                importedCode = urlParams.get("import");
+                importGame();
+            }
+        });
+    });
 
     const pushGame = () => {
         const msg: ZendoGameMessages = {

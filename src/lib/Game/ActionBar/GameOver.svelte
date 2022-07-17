@@ -50,7 +50,11 @@
     </div>
     <hr>
     <div class="content">
-        <p>The following code is a record of the game that can be reloaded into the client at a later time for review. Copy and paste it, or <a href="{exportDataStr}" download="ZendoGame_{(new Date()).toISOString()}.json">click here to download it</a>.</p>
-        <p><code>{JSON.stringify(exportedGame)}</code></p>
+        <p>The following code is a record of the game that can be reloaded into the client at a later time for review.</p>
+        <ul>
+            <li>You can <a href="{exportDataStr}" download="ZendoGame_{(new Date()).toISOString()}.json">click here to download it</a> as a file.</li>
+            <li>You can copy and paste it:<br><code>{JSON.stringify(exportedGame)}</code></li>
+            <li>You can save/share this URL for quick access:<br><a href="https://www.perlkonig.com/zendo/?import={encodeURIComponent(JSON.stringify(exportedGame))}"><code>https://www.perlkonig.com/zendo/?import={encodeURIComponent(JSON.stringify(exportedGame))}</code></a></li>
+        </ul>
     </div>
 </div>
