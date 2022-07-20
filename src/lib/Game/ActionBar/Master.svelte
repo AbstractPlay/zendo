@@ -40,7 +40,7 @@
 
     let koanType = "text";
     const chooseType = () => {
-        if ( (koanType === "text") || (koanType === "image") || (koanType === "math") || (koanType === "1dpyramids") || (koanType === "dotmatrix") || (koanType === "graphviz") ) {
+        if ( (koanType === "text") || (koanType === "image") || (koanType === "math") || (koanType === "1dpyramids") || (koanType === "dotmatrix") || (koanType === "graphviz") || (koanType === "2dpyramids") ) {
             $game.koanType = koanType;
             $game = $game;
             pushGame();
@@ -122,6 +122,10 @@
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"1dpyramids"}>
             1D pyramid koans
+        </label><br>
+        <label class="radio">
+            <input type=radio bind:group={koanType} name="koanType" value={"2dpyramids"}>
+            2D pyramid koans
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"dotmatrix"}>

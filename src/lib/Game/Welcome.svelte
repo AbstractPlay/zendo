@@ -46,6 +46,8 @@
             <p>This is a math dojo (powered by <a href="https://katex.org/">KaTeX</a>).</p>
         {:else if $game.koanType === "1dpyramids"}
             <p>This is a 1D pyramid dojo.</p>
+        {:else if $game.koanType === "2dpyramids"}
+            <p>This is a 2D pyramid dojo.</p>
         {:else if $game.koanType === "dotmatrix"}
             <p>This is a dot matrix dojo.</p>
         {:else if $game.koanType === "graphviz"}

@@ -14,6 +14,8 @@
         placeholder = "Enter in TeX or LaTeX format, without delimiters"
     } else if ($game.koanType === "1dpyramids") {
         placeholder = "Enter a series of pyramid designations separated by whitespace";
+    } else if ($game.koanType === "2dpyramids") {
+        placeholder = "Enter a series of pyramid designations, separated by whitespace; use a hyphen for an empty cell";
     } else if ($game.koanType === "dotmatrix") {
         placeholder = "Enter width, height, and then a string of digits";
     } else if ($game.koanType === "graphviz") {
@@ -71,6 +73,8 @@
     let typeDesc = $game.koanType.charAt(0).toUpperCase() + $game.koanType.slice(1);
     if ($game.koanType === "1dpyramids") {
         typeDesc = "1D Pyramid";
+    } else if ($game.koanType === "2dpyramids") {
+        typeDesc = "2D Pyramid";
     } else if ($game.koanType === "dotmatrix") {
         typeDesc = "Dot Matrix";
     } else if ($game.koanType === "graphviz") {
@@ -116,9 +120,9 @@
                 </div>
             {/if}
                 <label class="label" for="koanStr">Koan String</label>
-            {#if $game.koanType === "graphviz"}
+            {#if ( ($game.koanType === "graphviz") || ($game.koanType === "2dpyramids") )}
                 <div class="control">
-                    <textarea class="input" type="text" rows="3" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}"></textarea>
+                    <textarea class="input" type="text" rows="5" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}"></textarea>
                 </div>
             {:else}
                 <div class="control">
@@ -133,9 +137,9 @@
                 <p class="help">
                     Images must be square.
                 </p>
-            {:else if $game.koanType === "1dpyramids"}
+            {:else if ( ($game.koanType === "1dpyramids") || ($game.koanType === "2dpyramids") )}
                 <p class="help">
-                    COLOUR + SIZE + DIRECTION (case insensitive); for example "RD1", "BN2E", "VT3S"
+                    COLOUR + SIZE + DIRECTION (case insensitive); for example "RD1", "BN2E", "VT3SW"
                 </p>
             {:else if $game.koanType === "dotmatrix"}
                 <p class="help">
@@ -150,7 +154,7 @@
                 </p>
             {/if}
             </div>
-        {#if $game.koanType === "1dpyramids"}
+        {#if ( ($game.koanType === "1dpyramids") || ($game.koanType === "2dpyramids") )}
             <p>
                 Available colours: {@html colourSamples.join(", ")}.
             </p>
