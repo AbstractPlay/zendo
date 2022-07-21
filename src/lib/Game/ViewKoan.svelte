@@ -60,6 +60,15 @@
         svgResults = process1dCards(koanStr);
     } else if ($game.koanType === "2dcards") {
         svgResults = process2dCards(koanStr);
+    } else if ($game.koanType === "graphviz") {
+        svgResults = "Rendering...";
+        graphviz.dot(koanStr, "svg")
+        .then((svg) => {
+            svgResults = svg;
+        })
+        .catch((err) => {
+            svgResults = err;
+        });
     }
 
     let modalDelete = "";
@@ -120,13 +129,7 @@
             </figure>
         {:else if $game.koanType === "graphviz"}
             <figure class="koan graphkoan">
-            {#await graphviz.dot(koanStr, "svg")}
-                Rendering...
-            {:then svg}
-                {@html svg}
-            {:catch err}
-                Error: {err}
-            {/await}
+                {@html svgResults}
             </figure>
         {:else}
             <figure class="koan textkoan content">
@@ -155,6 +158,15 @@
                 <span class="icon" aria-label="Delete koan" title="Delete koan">
                     <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
                 </span>
+            </button>
+        {/if}
+        {#if ( ($game.koanType === "1dpyramids") || ($game.koanType === "2dpyramids") || ($game.koanType === "1dcards") || ($game.koanType === "2dcards") || ($game.koanType === "dotmatrix") || ($game.koanType === "graphviz"))}
+            <button class="button is-normal is-responsive">
+                <a style="color: black" href="data:image/svg+xml;utf8,{encodeURIComponent(svgResults)}" download="Koan_{koanNum + 1}_{(new Date()).toISOString()}.svg">
+                    <span class="icon" aria-label="Download koan" title="Download koan">
+                        <i class="fa-solid fa-download" aria-hidden="true"></i>
+                    </span>
+                </a>
             </button>
         {/if}
         </div>

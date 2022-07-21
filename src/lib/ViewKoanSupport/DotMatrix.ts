@@ -24,7 +24,7 @@ export const processDotMatrixSVG = (koanStr: string): string => {
     let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" viewBox="-7 -7 ${(width * 12) + 2} ${(height * 12) + 2}" width="100%" height="100%"><title>${koanStr}</title><defs>`;
     // Just add all nine colours every time, used or not
     for (let i = 0; i < colours.length; i++) {
-        svgStr += `<symbol viewBox="-5 -5 10 10" id="Dot${i + 1}"><circle r="4" cx="0" cy="0" fill="${colours[i]}" stroke="${colours[i]}"></symbol>`;
+        svgStr += `<symbol viewBox="-5 -5 10 10" id="Dot${i + 1}"><circle r="4" cx="0" cy="0" fill="${colours[i]}" stroke="${colours[i]}"/></symbol>`;
     }
     svgStr += `</defs>`;
 
