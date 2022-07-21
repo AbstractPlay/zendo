@@ -61,7 +61,7 @@
 
 <div class="card" id="peerBox">
     <header class="card-header">
-        <p class="card-header-title">Connected Peers ({$peers.length})</p>
+        <p class="card-header-title" on:click="{() => expandPeers = !expandPeers}">Connected Peers ({$peers.length})</p>
         <button class="card-header-icon" aria-label="toggle peers" title="toggle peers" on:click="{() => expandPeers = !expandPeers}">
         {#if expandPeers}
             <span class="icon">

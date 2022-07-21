@@ -56,7 +56,7 @@
 {#if $game.hasOwnProperty("koanType")}
     <div class="card" id="instructionBox">
         <header class="card-header">
-            <p class="card-header-title">Instructions</p>
+            <p class="card-header-title" on:click="{() => expandInstructions = !expandInstructions}">Instructions</p>
             <button class="card-header-icon" aria-label="toggle instructions" title="toggle instructions" on:click="{() => expandInstructions = !expandInstructions}">
             {#if expandInstructions}
                 <span class="icon">
