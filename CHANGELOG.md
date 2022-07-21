@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Added a `2dpyramids` koan type (rectangular grid of pyramids).
 * Added 45-degree rotations to the pyramids (`NE`, `SE`, `SW`, `NW`).
+* Added 1d and 2d playing card koans.
+
+### Changed
+
+* Refactored `ViewKoan.svelte` to break out helper functions with lengthy SVG code.
 
 ## [1.1.0] - 2022-07-17
 

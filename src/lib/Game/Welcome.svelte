@@ -48,6 +48,10 @@
             <p>This is a 1D pyramid dojo.</p>
         {:else if $game.koanType === "2dpyramids"}
             <p>This is a 2D pyramid dojo.</p>
+        {:else if $game.koanType === "1dcards"}
+            <p>This is a 1D playing card dojo.</p>
+        {:else if $game.koanType === "2dcards"}
+            <p>This is a 2D playing card dojo.</p>
         {:else if $game.koanType === "dotmatrix"}
             <p>This is a dot matrix dojo.</p>
         {:else if $game.koanType === "graphviz"}

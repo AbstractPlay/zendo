@@ -16,6 +16,10 @@
         placeholder = "Enter a series of pyramid designations separated by whitespace";
     } else if ($game.koanType === "2dpyramids") {
         placeholder = "Enter a series of pyramid designations, separated by whitespace; use a hyphen for an empty cell";
+    } else if ($game.koanType === "1dcards") {
+        placeholder = "Enter a series of card designations separated by whitespace";
+    } else if ($game.koanType === "2dcards") {
+        placeholder = "Enter a series of card designations separated by whitespace; use a hyphen for an empty cell";
     } else if ($game.koanType === "dotmatrix") {
         placeholder = "Enter width, height, and then a string of digits";
     } else if ($game.koanType === "graphviz") {
@@ -75,6 +79,10 @@
         typeDesc = "1D Pyramid";
     } else if ($game.koanType === "2dpyramids") {
         typeDesc = "2D Pyramid";
+    } else if ($game.koanType === "1dcards") {
+        typeDesc = "1D Playing Card";
+    } else if ($game.koanType === "2dcards") {
+        typeDesc = "2D Playing Card";
     } else if ($game.koanType === "dotmatrix") {
         typeDesc = "Dot Matrix";
     } else if ($game.koanType === "graphviz") {
@@ -120,7 +128,7 @@
                 </div>
             {/if}
                 <label class="label" for="koanStr">Koan String</label>
-            {#if ( ($game.koanType === "graphviz") || ($game.koanType === "2dpyramids") )}
+            {#if ( ($game.koanType === "graphviz") || ($game.koanType === "2dpyramids") || ($game.koanType === "2dcards") )}
                 <div class="control">
                     <textarea class="input" type="text" rows="5" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}"></textarea>
                 </div>
@@ -141,6 +149,8 @@
                 <p class="help">
                     COLOUR + SIZE + DIRECTION (case insensitive); for example "RD1", "BN2E", "VT3SW"
                 </p>
+            {:else if ( ($game.koanType === "1dcards") || ($game.koanType === "2dcards") )}
+                <p class="help">Value: [A2-9TJQK], Suit: [CDHS], Special cards: RJ (red joker), BJ (black joker), BKR (red back), BKB (blue back)</p>
             {:else if $game.koanType === "dotmatrix"}
                 <p class="help">
                     WIDTH,HEIGHT,CELLS (e.g., 2,2,1001)

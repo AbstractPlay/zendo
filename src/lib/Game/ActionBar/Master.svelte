@@ -40,7 +40,7 @@
 
     let koanType = "text";
     const chooseType = () => {
-        if ( (koanType === "text") || (koanType === "image") || (koanType === "math") || (koanType === "1dpyramids") || (koanType === "dotmatrix") || (koanType === "graphviz") || (koanType === "2dpyramids") ) {
+        if ( (koanType === "text") || (koanType === "image") || (koanType === "math") || (koanType === "1dpyramids") || (koanType === "dotmatrix") || (koanType === "graphviz") || (koanType === "2dpyramids") || (koanType === "1dcards") || (koanType === "2dcards") ) {
             $game.koanType = koanType;
             $game = $game;
             pushGame();
@@ -110,34 +110,43 @@
         <ReviewGuess/>
     {/if}
 {:else}
+    <p class="subtitle">Choose dojo type (cannot be changed):</p>
     <div class="control">
         <label class="radio">
             <input type="radio" bind:group={koanType} name="koanType" value={"text"}>
-            Text koans (words, numbers, etc.)
+            Text (words, numbers, etc.)
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"image"}>
-            Image koans
+            Images (square)
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"1dpyramids"}>
-            1D pyramid koans
+            1D pyramids
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"2dpyramids"}>
-            2D pyramid koans
+            2D pyramids
+        </label><br>
+        <label class="radio">
+            <input type=radio bind:group={koanType} name="koanType" value={"1dcards"}>
+            1D playing cards
+        </label><br>
+        <label class="radio">
+            <input type=radio bind:group={koanType} name="koanType" value={"2dcards"}>
+            2D playing cards
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"dotmatrix"}>
-            Dot matrix koans
+            Dot matrix (coloured dots on rectangular grids)
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"graphviz"}>
-            GraphViz koans (rendered by <a href="https://graphviz.org/docs/layouts/dot/">dot</a>)
+            GraphViz (rendered by <a href="https://graphviz.org/docs/layouts/dot/">dot</a>)
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"math"}>
-            Math koans (powered by <a href="https://katex.org/">KaTeX</a>)
+            Math (powered by <a href="https://katex.org/">KaTeX</a>)
         </label>
     </div>
     <p class="control">
