@@ -74,7 +74,6 @@
         svgResults = "Rendering...";
         const hexEncoded = Buffer.from(koanStr).toString("hex");
         const url = "https://www.plantuml.com/plantuml/svg/~h" + hexEncoded;
-        console.log(url);
         fetch(url)
         .then((r) => {
             r.text()
