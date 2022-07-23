@@ -40,7 +40,7 @@
 
     let koanType = "text";
     const chooseType = () => {
-        if ( (koanType === "text") || (koanType === "image") || (koanType === "math") || (koanType === "1dpyramids") || (koanType === "dotmatrix") || (koanType === "graphviz") || (koanType === "2dpyramids") || (koanType === "1dcards") || (koanType === "2dcards") ) {
+        if ( (koanType === "text") || (koanType === "image") || (koanType === "math") || (koanType === "1dpyramids") || (koanType === "dotmatrix") || (koanType === "graphviz") || (koanType === "2dpyramids") || (koanType === "1dcards") || (koanType === "2dcards") || (koanType === "plantuml") ) {
             $game.koanType = koanType;
             $game = $game;
             pushGame();
@@ -143,6 +143,10 @@
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"graphviz"}>
             GraphViz (rendered by <a href="https://graphviz.org/docs/layouts/dot/">dot</a>)
+        </label><br>
+        <label class="radio">
+            <input type=radio bind:group={koanType} name="koanType" value={"plantuml"}>
+            PlantUML (<a href="https://plantuml.com/">homepage</a>)
         </label><br>
         <label class="radio">
             <input type=radio bind:group={koanType} name="koanType" value={"math"}>

@@ -24,6 +24,8 @@
         placeholder = "Enter width, height, and then a string of digits";
     } else if ($game.koanType === "graphviz") {
         placeholder = "Type or paste your DOT code"
+    } else if ($game.koanType === "plantuml") {
+        placeholder = "Type or paste your PlantUML code"
     }
 
     let files: FileList;
@@ -87,6 +89,8 @@
         typeDesc = "Dot Matrix";
     } else if ($game.koanType === "graphviz") {
         typeDesc = "GraphViz";
+    } else if ($game.koanType === "plantuml") {
+        typeDesc = "PlantUML";
     }
 
     const colours = new Map<string, string>([
@@ -128,7 +132,7 @@
                 </div>
             {/if}
                 <label class="label" for="koanStr">Koan String</label>
-            {#if ( ($game.koanType === "graphviz") || ($game.koanType === "2dpyramids") || ($game.koanType === "2dcards") )}
+            {#if ( ($game.koanType === "graphviz") || ($game.koanType === "2dpyramids") || ($game.koanType === "2dcards") || ($game.koanType === "plantuml") )}
                 <div class="control">
                     <textarea class="input" type="text" rows="5" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}"></textarea>
                 </div>
@@ -161,6 +165,10 @@
             {:else if $game.koanType === "graphviz"}
                 <p class="help">
                     <a href="https://graphviz.org/doc/info/lang.html">DOT language reference</a>
+                </p>
+            {:else if $game.koanType === "plantuml"}
+                <p class="help">
+                    <a href="https://plantuml.com/">PlantUML language reference</a>
                 </p>
             {/if}
             </div>

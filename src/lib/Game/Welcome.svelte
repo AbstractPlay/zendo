@@ -56,6 +56,8 @@
             <p>This is a dot matrix dojo.</p>
         {:else if $game.koanType === "graphviz"}
             <p>This is a <a href="https://graphviz.org/">GraphViz</a> dojo (rendered by <a href="https://graphviz.org/docs/layouts/dot/">dot</a>).</p>
+        {:else if $game.koanType === "plantuml"}
+            <p>This is a <a href="https://plantuml.com/">PlantUML</a> dojo.</p>
         {:else}
             <p>This is a text dojo.</p>
         {/if}

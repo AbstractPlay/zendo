@@ -1,10 +1,11 @@
 <script lang="ts">
     import katex from "katex";
+    import { graphviz } from "node-graphviz";
+    import { Buffer } from "buffer";
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
     import { peers } from "@/stores/writePeers";
     import type { ZendoGameMessages } from "@/schemas/messages";
-    import { graphviz } from "node-graphviz";
     import { process1dSvg, process2dSvg} from "@/lib/ViewKoanSupport/Pyramids";
     import { process1dCards, process2dCards } from "@/lib/ViewKoanSupport/Cards";
     import { processDotMatrixSVG } from "@/lib/ViewKoanSupport/DotMatrix";
@@ -69,6 +70,24 @@
         .catch((err) => {
             svgResults = err;
         });
+    } else if ( ($game.koanType === "plantuml") && (koanStr.length > 0) ) {
+        svgResults = "Rendering...";
+        const hexEncoded = Buffer.from(koanStr).toString("hex");
+        const url = "http://www.plantuml.com/plantuml/svg/~h" + hexEncoded;
+        console.log(url);
+        fetch(url)
+        .then((r) => {
+            r.text()
+            .then((txt) => {
+                svgResults = txt;
+            })
+            .catch((e) => {
+                svgResults = "An error occurred getting the text body."
+            });
+        })
+        .catch((e) => {
+            svgResults = e;
+        });
     }
 
     let modalDelete = "";
@@ -127,7 +146,7 @@
             <figure class="koan dotmatrixkoan">
                 {@html svgResults}
             </figure>
-        {:else if $game.koanType === "graphviz"}
+        {:else if ( ($game.koanType === "graphviz") || ($game.koanType === "plantuml") )}
             <figure class="koan graphkoan">
                 {@html svgResults}
             </figure>
@@ -160,7 +179,7 @@
                 </span>
             </button>
         {/if}
-        {#if ( ($game.koanType === "1dpyramids") || ($game.koanType === "2dpyramids") || ($game.koanType === "1dcards") || ($game.koanType === "2dcards") || ($game.koanType === "dotmatrix") || ($game.koanType === "graphviz"))}
+        {#if ( ($game.koanType === "1dpyramids") || ($game.koanType === "2dpyramids") || ($game.koanType === "1dcards") || ($game.koanType === "2dcards") || ($game.koanType === "dotmatrix") || ($game.koanType === "graphviz") || ($game.koanType === "plantuml") )}
             <button class="button is-normal is-responsive">
                 <a style="color: black" href="data:image/svg+xml;utf8,{encodeURIComponent(svgResults)}" download="Koan_{koanNum + 1}_{(new Date()).toISOString()}.svg">
                     <span class="icon" aria-label="Download koan" title="Download koan">
