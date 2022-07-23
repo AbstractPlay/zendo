@@ -223,7 +223,7 @@
             </div>
         {#if ( ($game.koanType !== "text") && ($game.koanType !== "image") )}
             <div>
-                <code>{koanStr}</code>
+                <pre>{koanStr}</pre>
             </div>
         {/if}
         </section>
