@@ -7,6 +7,8 @@
     import type { ZendoGameState } from "@/schemas/game";
     import MarkKoan from "./Global/MarkKoan.svelte";
     import PendingGuess from "./Global/PendingGuess.svelte";
+    import { Buffer } from "buffer";
+    import pako from "pako";
 
     const id2name = (id: string): string => {
         const idx = $peers.findIndex((rec) => rec.id === id);
@@ -55,6 +57,7 @@
     let modalExport = "";
     let exportedGame: ZendoGameState;
     let exportDataStr: string;
+    let encoded: string;
     game.subscribe((obj) => {
         exportedGame = {} as ZendoGameState;
         if (obj.hasOwnProperty("koanType")) {
@@ -70,6 +73,8 @@
         if (obj.hasOwnProperty("koans")) {
             exportedGame.koans = [...obj.koans];
         }
+        const compressed = pako.deflate(JSON.stringify(exportedGame));
+        encoded = Buffer.from(compressed).toString("base64");
         exportDataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportedGame));
     });
 </script>
@@ -147,8 +152,8 @@
                 <p>The following code is a record of the game's current state that can be reloaded into the client at a later time for review.</p>
                 <ul>
                     <li>You can <a href="{exportDataStr}" download="ZendoGame_{(new Date()).toISOString()}.json">click here to download it</a> as a file.</li>
-                    <li>You can copy and paste it:<br><code>{JSON.stringify(exportedGame)}</code></li>
-                    <li>You can save/share this URL for quick access:<br><a href="https://www.perlkonig.com/zendo/?import={encodeURIComponent(JSON.stringify(exportedGame))}"><code>https://www.perlkonig.com/zendo/?import={encodeURIComponent(JSON.stringify(exportedGame))}</code></a></li>
+                    <li>You can copy and paste it:<br><code>{encoded}</code></li>
+                    <li>You can save/share this URL for quick access:<br><a href="https://www.perlkonig.com/zendo/?import={encodeURIComponent(encoded)}"><code>https://www.perlkonig.com/zendo/?import={encodeURIComponent(encoded)}</code></a></li>
                 </ul>
             </div>
         </section>

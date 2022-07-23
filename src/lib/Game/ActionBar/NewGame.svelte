@@ -5,6 +5,8 @@
     import type { ZendoGameMessages } from "@/schemas/messages";
     import type { ZendoGameState } from "@/schemas/game";
     import { onMount } from "svelte";
+    import { Buffer } from "buffer";
+    import pako from "pako";
 
     onMount(() => {
         $peer.on("open", () => {
@@ -35,9 +37,16 @@
     let modalImport = "";
     let importedCode: string;
     const importGame = () => {
+        let inflated: string;
+        if (importedCode.startsWith("{")) {
+            inflated = importedCode;
+        } else {
+            const decoded = Buffer.from(importedCode, "base64");
+            inflated = pako.inflate(decoded, {to: "string"});
+        }
         let obj: ZendoGameState;
         try {
-            obj = JSON.parse(importedCode) as ZendoGameState;
+            obj = JSON.parse(inflated) as ZendoGameState;
         } catch {
             return;
         }
