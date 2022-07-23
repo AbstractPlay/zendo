@@ -73,7 +73,7 @@
     } else if ( ($game.koanType === "plantuml") && (koanStr.length > 0) ) {
         svgResults = "Rendering...";
         const hexEncoded = Buffer.from(koanStr).toString("hex");
-        const url = "http://www.plantuml.com/plantuml/svg/~h" + hexEncoded;
+        const url = "https://www.plantuml.com/plantuml/svg/~h" + hexEncoded;
         console.log(url);
         fetch(url)
         .then((r) => {
