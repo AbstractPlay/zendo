@@ -180,6 +180,45 @@
         }
         $peer.destroy();
     };
+
+    let showCode = false;
+    let modalShow = "";
+    // From StackOverflow: https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+    const fallbackCopyTextToClipboard = (text: string) => {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            // console.log('Fallback: Copying text command was ' + msg);
+        } catch (err) {
+            // console.error('Fallback: Oops, unable to copy', err);
+        }
+
+        document.body.removeChild(textArea);
+    };
+
+    const copyTextToClipboard = (text: string) => {
+        if (!navigator.clipboard) {
+            fallbackCopyTextToClipboard(text);
+            return;
+        }
+        navigator.clipboard.writeText(text).then(function() {
+            console.log('Async: Copying to clipboard was successful!');
+        }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+        });
+    };
 </script>
 
 <svelte:window on:beforeunload={shutdown}/>
@@ -188,7 +227,11 @@
     <div class="level-left">
         <div class="level-item">
         {#if id.length > 0}
-            <p>Your ID is <code>{id}</code></p>
+            {#if showCode}
+                <p>Your ID is <code>{id}</code> <a href="{'#'}" target="_self" on:click={() => showCode = false}><span class="clickTarget">(click to hide)</span></a></p>
+            {:else}
+                <p>Connection established <a href="{'#'}" target="_self" on:click={() => copyTextToClipboard(id)}><span class="clickTarget">(click to copy ID)</span></a> <a href="{'#'}" target="_self" on:click={() => modalShow = "is-active"}><span class="clickTarget">(click to show ID)</span></a></p>
+            {/if}
         {:else}
             <p>Connecting to brokering server. Refresh to retry.</p>
         {/if}
@@ -204,4 +247,24 @@
     </div>
 </div>
 
-<style></style>
+<div class="modal {modalShow}" id="confirmDelete">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Show Code?</p>
+        </header>
+        <section class="modal-card-body">
+            <p>Do not show your code if you are streaming. Once the code is revealed, anyone on the Internet can then connect to your lobby. Use the "copy to clipboard" link instead to share your code with friends.</p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" on:click="{() => {showCode = true; modalShow = "";}}">Show Code</button>
+            <button class="button" on:click="{() => {modalShow = ""}}">Cancel</button>
+        </footer>
+    </div>
+</div>
+
+<style>
+    .clickTarget {
+        font-size: smaller;
+    }
+</style>

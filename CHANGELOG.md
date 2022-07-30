@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2022-07-30
+
+### Changed
+
+* Your ID code no longer displays by default. You can click to copy it to clipboard or to show/hide it. This is to make it safer to stream. You typically do not want to show the code to the global Internet, or else anyone could join your lobby.
+
 ## [1.3.1] - 2022-07-22
 
 ### Fixed
