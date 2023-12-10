@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Added toast notifications.
 * Masters can now customize the pyramid colours in `1dpyramids` and `2dpyramids` dojos. Your custom colours should persist between games (using localstorage).
+* Added a couple more default colours.
 
 ### Fixed
 

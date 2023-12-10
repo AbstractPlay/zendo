@@ -16,7 +16,7 @@
   "type": "module",
   "scripts": {
     "dev": "set NODE_ENV=development && npm run schemas && vite",
-    "build": "set NODE_ENV=production && npm run schemas && vite build",
+    "build": "set NODE_ENV=production && npm run schemas && vite build --base=/zendo",
     "preview": "set NODE_ENV=development && npm run build && vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "schemas": "npx json2ts -i src/schemas/messages.json -o src/schemas/messages.d.ts && npx json2ts -i src/schemas/game.json -o src/schemas/game.d.ts"
