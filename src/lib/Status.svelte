@@ -7,6 +7,7 @@
     import type { ZendoGameMessages } from "../schemas/messages";
     import { game } from "../stores/writeGame";
     import type { ZendoGameState } from "@/schemas/game";
+    import { toast } from '@zerodevx/svelte-toast';
 
     let remotePeer: string;
     const joinClick = () => {
@@ -34,8 +35,12 @@
         // Add handlers
         conn.on("data", (data) => handleMsg(data as ZendoGameMessages, conn.peer));
         conn.on("close", () => {
+            const rec = $peers.find(p => p.id === conn.peer);
+            if (rec !== undefined) {
+                toast.push(`${rec.alias} is leaving.`)
+            }
             peers.update((lst) => deletePeer(lst, conn.peer));
-            if ($game.hasOwnProperty("students")) {
+            if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
                 const idx = $game.students.findIndex(s => s.id === conn.peer);
                 if (idx !== -1) {
                     $game.students.splice(idx, 1);
@@ -69,6 +74,7 @@
         // You can't share if there is no master otherwise newly joining players will clober existing games.
         if (
             ($game.hasOwnProperty("master")) &&
+            ($game.master !== undefined) &&
             (
                 (! idlst.includes($game.master)) ||
                 ($game.master === $peer.id)
@@ -105,7 +111,7 @@
         const idx = $peers.findIndex((rec) => rec.id === id);
         if (idx !== -1) {
             if ($peers[idx].alias !== undefined) {
-                return $peers[idx].alias;
+                return $peers[idx].alias!;
             } else {
                 return id;
             }
@@ -132,7 +138,13 @@
                         if ( (msg.name.length === 0) || (/^\s+$/.test(msg.name)) ) {
                             msg.name = "Random" + Math.floor((Math.random() * 9000) + 1000).toString();
                         }
+                        const oldname = lst[idx].alias;
                         lst[idx].alias = msg.name;
+                        if (oldname === undefined) {
+                            toast.push(`${msg.name} just joined the room.`);
+                        } else {
+                            toast.push(`${oldname} changed their display name to ${msg.name}`);
+                        }
                     }
                     return [...lst];
                 });
@@ -151,10 +163,26 @@
                 }
                 sendDirectMsg(peerid, reply);
             } else if (msg.type === "gameReplace") {
+                if (msg.description !== undefined) {
+                    const matches = msg.description.matchAll(/\|\S+\|/g);
+                    let str = msg.description;
+                    for (const [m] of matches) {
+                        const id = m.substring(1, m.length - 1);
+                        let p = $peers.find(p => p.id === id);
+                        let name = "UNKNOWN"
+                        if ( (p !== undefined) && (p.alias !== undefined) ) {
+                            name = p.alias;
+                        } else if ( (p === undefined) && ($peer.id === id) ) {
+                            name = $myName;
+                        }
+                        str = str.replaceAll(m, name);
+                    }
+                    toast.push(str);
+                }
                 $game = JSON.parse(msg.game) as ZendoGameState;
             } else if (msg.type === "vote") {
-                if ($game.hasOwnProperty("koanPending")) {
-                    if (! $game.koanPending.hasOwnProperty("votes")) {
+                if ( ($game.hasOwnProperty("koanPending")) && ($game.koanPending !== undefined) ) {
+                    if ( (! $game.koanPending.hasOwnProperty("votes")) || ($game.koanPending.votes === undefined) ) {
                         $game.koanPending.votes = [];
                     }
                     const idx = $game.koanPending.votes.findIndex(v => v.student === peerid);

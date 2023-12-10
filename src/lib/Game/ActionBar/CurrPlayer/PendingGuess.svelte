@@ -1,12 +1,14 @@
 <script lang="ts">
     import { game } from "@/stores/writeGame";
     import { peers } from "@/stores/writePeers";
+    import { peer } from "@/stores/writePeerObj";
     import type { ZendoGameMessages } from "@/schemas/messages";
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description,
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -15,13 +17,13 @@
 
     const submitGuess = () => {
         $game = $game;
-        pushGame();
+        pushGame(`|${$peer.id}| submitted a guess.`);
     };
 
     const withdrawGuess = () => {
         delete $game.guessPending;
         $game = $game;
-        pushGame();
+        pushGame(`|${$peer.id}| withdrew their guess.`);
     };
 </script>
 

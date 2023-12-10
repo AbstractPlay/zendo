@@ -4,10 +4,11 @@
     import { peers } from "@/stores/writePeers";
     import type { ZendoGameMessages } from "@/schemas/messages";
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description,
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -16,14 +17,14 @@
 
     const dojoTakeover = () => {
         $game.master = $peer.id;
-        if ($game.hasOwnProperty("students")) {
+        if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
             const idx = $game.students.findIndex(s => s.id === $game.master);
             if (idx !== -1) {
                 $game.students.splice(idx, 1);
             }
         }
         $game = $game;
-        pushGame();
+        pushGame(`|${$peer.id}| has taken over as master.`);
     };
 
 

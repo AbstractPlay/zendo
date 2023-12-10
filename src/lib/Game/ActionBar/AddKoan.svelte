@@ -2,6 +2,7 @@
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
     import { peers } from "@/stores/writePeers";
+    import { rgbToHsv, rgbToInts, sortHSV } from "@/lib/ViewKoanSupport/Colours";
     import type { ZendoGameMessages } from "@/schemas/messages";
     import ViewKoan from "../ViewKoan.svelte";
 
@@ -28,7 +29,7 @@
         placeholder = "Type or paste your PlantUML code"
     }
 
-    let files: FileList;
+    let files: FileList|undefined;
     $: if (files) {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -42,10 +43,11 @@
         }
     }
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description,
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -55,6 +57,9 @@
     let hasNature = false;
     let call: "master" | "mondo" = "master";
     const submitKoan = () => {
+        if ($game.koans === undefined) {
+            $game.koans = [];
+        }
         koanStr = koanStr.replace(/\s+$/, "");
         // If master is submitting it, go directly to the play area.
         if ($game.master === $peer.id) {
@@ -70,45 +75,47 @@
             }
         }
         $game = $game;
-        pushGame();
+        pushGame(`|${$peer.id}| submitted a koan.${call === "mondo" ? " Mondo has been called!" : ""}`);
         modalAdd = "";
         koanStr = "";
         files = undefined;
     };
 
-    let typeDesc = $game.koanType.charAt(0).toUpperCase() + $game.koanType.slice(1);
-    if ($game.koanType === "1dpyramids") {
-        typeDesc = "1D Pyramid";
-    } else if ($game.koanType === "2dpyramids") {
-        typeDesc = "2D Pyramid";
-    } else if ($game.koanType === "1dcards") {
-        typeDesc = "1D Playing Card";
-    } else if ($game.koanType === "2dcards") {
-        typeDesc = "2D Playing Card";
-    } else if ($game.koanType === "dotmatrix") {
-        typeDesc = "Dot Matrix";
-    } else if ($game.koanType === "graphviz") {
-        typeDesc = "GraphViz";
-    } else if ($game.koanType === "plantuml") {
-        typeDesc = "PlantUML";
+    let typeDesc: string|undefined;
+    if ($game.koanType !== undefined) {
+        typeDesc = $game.koanType.charAt(0).toUpperCase() + $game.koanType.slice(1);
+        if ($game.koanType === "1dpyramids") {
+            typeDesc = "1D Pyramid";
+        } else if ($game.koanType === "2dpyramids") {
+            typeDesc = "2D Pyramid";
+        } else if ($game.koanType === "1dcards") {
+            typeDesc = "1D Playing Card";
+        } else if ($game.koanType === "2dcards") {
+            typeDesc = "2D Playing Card";
+        } else if ($game.koanType === "dotmatrix") {
+            typeDesc = "Dot Matrix";
+        } else if ($game.koanType === "graphviz") {
+            typeDesc = "GraphViz";
+        } else if ($game.koanType === "plantuml") {
+            typeDesc = "PlantUML";
+        }
     }
 
-    const colours = new Map<string, string>([
-        ["RD", "#e41a1c"],
-        ["GN", "#4daf4a"],
-        ["BU", "#377eb8"],
-        ["YE", "#ffff33"],
-        ["VT", "#984ea3"],
-        ["OG", "#ff7f00"],
-        ["BN", "#a65628"],
-        ["PK", "#f781bf"],
-        ["GY", "#999999"],
-        ["WH", "#ffffff"],
-    ]);
     let colourSamples: string[] = [];
-    for (const c of colours) {
-        colourSamples.push(`<code style="background-color: ${c[1]}; color: black;">${c[0]}</code>`);
-    }
+    game.subscribe((obj) => {
+        if (obj.colours !== undefined) {
+            let newMap = new Map<string, string>();
+            for (const {abbreviation, hex} of obj.colours) {
+                newMap.set(abbreviation, hex);
+            }
+            colourSamples = [];
+            let sorted = [...newMap.entries()].sort((a, b) => sortHSV(rgbToHsv(...rgbToInts(a[1])), rgbToHsv(...rgbToInts(b[1]))));
+            for (const [abbrev, rgb] of sorted) {
+                colourSamples.push(`<code style="background-color: ${rgb}; color: black;">${abbrev}</code>`);
+            }
+
+        }
+    });
 </script>
 
 <p class="control">
@@ -121,7 +128,7 @@
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Add {typeDesc} Koan</p>
+            <p class="modal-card-title">Add {typeDesc || "UNKNOWN"} Koan</p>
         </header>
         <section class="modal-card-body">
             <div class="field">
@@ -134,7 +141,7 @@
                 <label class="label" for="koanStr">Koan String</label>
             {#if ( ($game.koanType === "graphviz") || ($game.koanType === "2dpyramids") || ($game.koanType === "2dcards") || ($game.koanType === "plantuml") )}
                 <div class="control">
-                    <textarea class="input" type="text" rows="5" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}"></textarea>
+                    <textarea class="textarea" rows="5" placeholder="{placeholder}" id="koanStr" bind:value="{koanStr}"></textarea>
                 </div>
             {:else}
                 <div class="control">
@@ -151,7 +158,7 @@
                 </p>
             {:else if ( ($game.koanType === "1dpyramids") || ($game.koanType === "2dpyramids") )}
                 <p class="help">
-                    COLOUR + SIZE + DIRECTION (case insensitive); for example "RD1", "BN2E", "VT3SW"
+                    COLOUR + SIZE + DIRECTION (case insensitive); direction can be a compass direction or an arbitrary integer; for example <code>RD1 BN2E VT3SW GN125</code>.
                 </p>
             {:else if ( ($game.koanType === "1dcards") || ($game.koanType === "2dcards") )}
                 <p class="help">Value: [A2-9TJQK], Suit: [CDHS], Special cards: RJ (red joker), BJ (black joker), BKR (red back), BKB (blue back)</p>
@@ -173,9 +180,11 @@
             {/if}
             </div>
         {#if ( ($game.koanType === "1dpyramids") || ($game.koanType === "2dpyramids") )}
+        {#key colourSamples}
             <p>
                 Available colours: {@html colourSamples.join(", ")}.
             </p>
+        {/key}
         {/if}
         {#if $game.master === $peer.id}
             <div class="field">

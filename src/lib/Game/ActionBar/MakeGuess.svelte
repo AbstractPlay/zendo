@@ -2,12 +2,14 @@
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
     import { peers } from "@/stores/writePeers";
+    import { myName } from "@/stores/writeMyName";
     import type { ZendoGameMessages } from "@/schemas/messages";
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description,
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -22,7 +24,7 @@
             guess: guessTxt
         };
         $game = $game;
-        pushGame();
+        pushGame(`|${$peer.id}| has submitted a guess.`);
         modalGuess = "";
     };
 </script>

@@ -18,7 +18,9 @@ The following dojo types are supported:
 
 * plain text (koans are displayed as entered)
 * images (drag and drop square image files)
-* math (powered by [KaTeX](https://katex.org/), using TeX/LaTeX notation)
-* 1d pyramids (one-dimensional koans with [Looney pyramids](https://www.looneylabs.com/pyramids-home))
+* 1d & 2d pyramids (koans with [Looney pyramids](https://www.looneylabs.com/pyramids-home))
+* 1d & 2d playing cards
 * dot matrix (coloured dots on rectangular grids)
 * [GraphViz](https://graphviz.org/) (rendered by [dot](https://graphviz.org/docs/layouts/dot/))
+* [PlantUML](https://plantuml.com/) (rendered by PlantUML)
+* math (powered by [KaTeX](https://katex.org/), using TeX/LaTeX notation)

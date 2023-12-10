@@ -6,29 +6,30 @@
     import { peer } from "@/stores/writePeerObj";
     import { peers } from "@/stores/writePeers";
     import type { ZendoGameMessages } from "@/schemas/messages";
-    import { process1dSvg, process2dSvg} from "@/lib/ViewKoanSupport/Pyramids";
+    import { defaultColours, process1dSvg, process2dSvg} from "@/lib/ViewKoanSupport/Pyramids";
     import { process1dCards, process2dCards } from "@/lib/ViewKoanSupport/Cards";
     import { processDotMatrixSVG } from "@/lib/ViewKoanSupport/DotMatrix";
 
     // You can provide either a number or a string, but not both.
     // Passing a number assumes the koan already exists in the game object.
-    export let koanNum: number = undefined;
-    export let koanStr: string = undefined;
+    export let koanNum: number|undefined = undefined;
+    export let koanStr: string|undefined = undefined;
     export let noExpand = false;
-    let htbn: boolean;
+    let htbn: boolean|undefined;
     if (koanStr !== undefined) {
         koanNum = undefined;
         htbn = undefined;
     }
-    if (koanNum !== undefined) {
+    if ( (koanNum !== undefined) && ($game.koans !== undefined) ) {
         koanStr = $game.koans[koanNum].string;
         htbn = $game.koans[koanNum].htbn;
     }
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description,
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -36,75 +37,89 @@
     };
 
     const toggleNature = () => {
-        $game.koans[koanNum].htbn = !$game.koans[koanNum].htbn;
-        $game = $game;
-        pushGame();
+        if ( ($game.koans !== undefined) && (koanNum !== undefined) ) {
+            $game.koans[koanNum].htbn = !$game.koans[koanNum].htbn;
+            $game = $game;
+            pushGame(`Koan ${koanNum}'s Buddha nature was toggled.`);
+        }
     };
 
     let equation: string;
     if ($game.koanType === "math") {
         try {
-            equation = katex.renderToString(koanStr, {displayMode: true});
+            equation = katex.renderToString(koanStr!, {displayMode: true});
         } catch {
             equation = "Invalid equation";
         }
     }
 
+    let masterColours = new Map(defaultColours);
+    game.subscribe(obj => {
+        if (obj.colours !== undefined) {
+            const newColours = new Map<string,string>([...obj.colours].map(({abbreviation, hex}) => [abbreviation, hex]));
+            masterColours = new Map(newColours);
+        }
+    });
+
     let svgResults: string;
-    if ($game.koanType === "1dpyramids") {
-        svgResults = process1dSvg(koanStr);
-    } else if ($game.koanType === "2dpyramids") {
-        svgResults = process2dSvg(koanStr);
-    } else if ($game.koanType === "dotmatrix") {
-        svgResults = processDotMatrixSVG(koanStr);
-    } else if ($game.koanType === "1dcards") {
-        svgResults = process1dCards(koanStr);
-    } else if ($game.koanType === "2dcards") {
-        svgResults = process2dCards(koanStr);
-    } else if ($game.koanType === "graphviz") {
-        svgResults = "Rendering...";
-        graphviz.dot(koanStr, "svg")
-        .then((svg) => {
-            svgResults = svg;
-        })
-        .catch((err) => {
-            svgResults = err;
-        });
-    } else if ( ($game.koanType === "plantuml") && (koanStr.length > 0) ) {
-        svgResults = "Rendering...";
-        const hexEncoded = Buffer.from(koanStr).toString("hex");
-        const url = "https://www.plantuml.com/plantuml/svg/~h" + hexEncoded;
-        fetch(url)
-        .then((r) => {
-            r.text()
-            .then((txt) => {
-                svgResults = txt;
+    if (koanStr !== undefined) {
+        if ($game.koanType === "1dpyramids") {
+            svgResults = process1dSvg(koanStr, masterColours);
+        } else if ($game.koanType === "2dpyramids") {
+            svgResults = process2dSvg(koanStr, masterColours);
+        } else if ($game.koanType === "dotmatrix") {
+            svgResults = processDotMatrixSVG(koanStr);
+        } else if ($game.koanType === "1dcards") {
+            svgResults = process1dCards(koanStr);
+        } else if ($game.koanType === "2dcards") {
+            svgResults = process2dCards(koanStr);
+        } else if ($game.koanType === "graphviz") {
+            svgResults = "Rendering...";
+            graphviz.dot(koanStr, "svg")
+            .then((svg) => {
+                svgResults = svg;
+            })
+            .catch((err) => {
+                svgResults = err;
+            });
+        } else if ( ($game.koanType === "plantuml") && (koanStr.length > 0) ) {
+            svgResults = "Rendering...";
+            const hexEncoded = Buffer.from(koanStr).toString("hex");
+            const url = "https://www.plantuml.com/plantuml/svg/~h" + hexEncoded;
+            fetch(url)
+            .then((r) => {
+                r.text()
+                .then((txt) => {
+                    svgResults = txt;
+                })
+                .catch((e) => {
+                    svgResults = "An error occurred getting the text body."
+                });
             })
             .catch((e) => {
-                svgResults = "An error occurred getting the text body."
+                svgResults = e;
             });
-        })
-        .catch((e) => {
-            svgResults = e;
-        });
+        }
     }
 
     let modalDelete = "";
     const deleteKoan = () => {
-        // Subtract 1 from each guess index greater than the koan number
-        if ($game.hasOwnProperty("guesses")) {
-            for (let i = 0; i < $game.guesses.length; i++) {
-                if ($game.guesses[i].index > koanNum) {
-                    $game.guesses[i].index--;
-                    $game = $game;
+        if ( ($game.koans !== undefined) && (koanNum !== undefined) ) {
+            // Subtract 1 from each guess index greater than the koan number
+            if ( ($game.hasOwnProperty("guesses")) && ($game.guesses !== undefined) ) {
+                for (let i = 0; i < $game.guesses!.length; i++) {
+                    if ($game.guesses![i].index > koanNum) {
+                        $game.guesses![i].index--;
+                        $game = $game;
+                    }
                 }
             }
+            // Remove koan from the list
+            $game.koans!.splice(koanNum, 1);
+            $game = $game;
+            pushGame(`Koan ${koanNum} was removed, and everything was renumbered accordingly.`);
+            modalDelete = "";
         }
-        // Remove koan from the list
-        $game.koans.splice(koanNum, 1);
-        $game = $game;
-        pushGame();
-        modalDelete = "";
     };
 
     let modalExpand = "";
@@ -180,7 +195,7 @@
         {/if}
         {#if ( ($game.koanType === "1dpyramids") || ($game.koanType === "2dpyramids") || ($game.koanType === "1dcards") || ($game.koanType === "2dcards") || ($game.koanType === "dotmatrix") || ($game.koanType === "graphviz") || ($game.koanType === "plantuml") )}
             <button class="button is-normal is-responsive">
-                <a style="color: black" href="data:image/svg+xml;utf8,{encodeURIComponent(svgResults)}" download="Koan_{koanNum + 1}_{(new Date()).toISOString()}.svg">
+                <a style="color: black" href="data:image/svg+xml;utf8,{encodeURIComponent(svgResults)}" download="Koan_{(koanNum || 0) + 1}_{(new Date()).toISOString()}.svg">
                     <span class="icon" aria-label="Download koan" title="Download koan">
                         <i class="fa-solid fa-download" aria-hidden="true"></i>
                     </span>

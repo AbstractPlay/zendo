@@ -19,10 +19,11 @@
         });
     });
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description,
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -31,41 +32,43 @@
 
     const becomeMaster = () => {
         $game.master = $peer.id;
-        pushGame();
+        pushGame(`|${$peer.id}| has become the master.`);
     };
 
     let modalImport = "";
-    let importedCode: string;
+    let importedCode: string|null;
     const importGame = () => {
-        let inflated: string;
-        if (importedCode.startsWith("{")) {
-            inflated = importedCode;
-        } else {
-            const decoded = Buffer.from(importedCode, "base64");
-            inflated = pako.inflate(decoded, {to: "string"});
+        if (importedCode !== null) {
+            let inflated: string;
+            if (importedCode.startsWith("{")) {
+                inflated = importedCode;
+            } else {
+                const decoded = Buffer.from(importedCode, "base64");
+                inflated = pako.inflate(decoded, {to: "string"});
+            }
+            let obj: ZendoGameState;
+            try {
+                obj = JSON.parse(inflated) as ZendoGameState;
+            } catch {
+                return;
+            }
+            if ( (! obj.hasOwnProperty("koanType")) || (obj.koanType === undefined) ) {
+                return;
+            }
+            $game.master = $peer.id;
+            $game.koanType = obj.koanType;
+            if ( (obj.hasOwnProperty("welcome")) && (obj.welcome !== undefined) ) {
+                $game.welcome = obj.welcome;
+            }
+            if ( (obj.hasOwnProperty("guesses")) && (obj.guesses !== undefined) ) {
+                $game.guesses = [...obj.guesses];
+            }
+            if ( (obj.hasOwnProperty("koans")) && (obj.koans !== undefined) ) {
+                $game.koans = [...obj.koans];
+            }
+            pushGame(`|${$peer.id}| has imported a game.`);
+            modalImport = "";
         }
-        let obj: ZendoGameState;
-        try {
-            obj = JSON.parse(inflated) as ZendoGameState;
-        } catch {
-            return;
-        }
-        if ( (! obj.hasOwnProperty("koanType")) || (obj.koanType === undefined) ) {
-            return;
-        }
-        $game.master = $peer.id;
-        $game.koanType = obj.koanType;
-        if (obj.hasOwnProperty("welcome")) {
-            $game.welcome = obj.welcome;
-        }
-        if (obj.hasOwnProperty("guesses")) {
-            $game.guesses = [...obj.guesses];
-        }
-        if (obj.hasOwnProperty("koans")) {
-            $game.koans = [...obj.koans];
-        }
-        pushGame();
-        modalImport = "";
     };
 </script>
 
@@ -100,7 +103,7 @@
         <section class="modal-card-body">
             <p class="content">Paste the code you saved or downloaded previously. You will automatically become the master of the renewed dojo.</p>
             <div class="control">
-                <textarea class="input" type="text" rows="5" placeholder="Paste code here" id="pastedCode" bind:value="{importedCode}"></textarea>
+                <textarea class="textarea" rows="5" placeholder="Paste code here" id="pastedCode" bind:value="{importedCode}"></textarea>
             </div>
         </section>
         <footer class="modal-card-foot">

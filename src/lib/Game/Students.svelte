@@ -9,7 +9,7 @@
         const idx = $peers.findIndex((rec) => rec.id === id);
         if (idx !== -1) {
             if ($peers[idx].alias !== undefined) {
-                return $peers[idx].alias;
+                return $peers[idx].alias!;
             } else {
                 return id;
             }
@@ -29,10 +29,11 @@
         return false;
     };
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -40,18 +41,18 @@
     };
 
     const giveGuess = (id: string) => {
-        if ($game.hasOwnProperty("students")) {
+        if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
             const idx = $game.students.findIndex(s => s.id === id);
             if (idx !== -1) {
                 $game.students[idx].guesses++;
                 $game = $game;
-                pushGame();
+                pushGame(`|${id}| received a guessing stone.`);
             }
         }
     };
 
     const takeGuess = (id: string) => {
-        if ($game.hasOwnProperty("students")) {
+        if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
             const idx = $game.students.findIndex(s => s.id === id);
             if (idx !== -1) {
                 $game.students[idx].guesses--;
@@ -59,13 +60,13 @@
                     $game.students[idx].guesses = 0;
                 }
                 $game = $game;
-                pushGame();
+                pushGame(`|${id}| lost a guessing stone.`);
             }
         }
     };
 
     const removeStudent = (id: string) => {
-        if ($game.hasOwnProperty("students")) {
+        if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
             const idx = $game.students.findIndex(s => s.id === id);
             if (idx !== -1) {
                 $game.students.splice(idx, 1);
@@ -73,19 +74,24 @@
                     delete $game.students;
                 }
                 $game = $game;
-                pushGame();
+                pushGame(`|${id}| was removed as a student.`);
             }
         }
     };
 
     const makeTurn = (id: string) => {
+        const peer = $peers.find(p => p.id === id);
         $game.currplayer = id;
         $game = $game;
-        pushGame();
+        if (peer !== undefined) {
+            pushGame(`It is now |${id}|'s turn.`);
+        } else {
+            pushGame();
+        }
     }
 </script>
 
-{#if $game.hasOwnProperty("students")}
+{#if $game.hasOwnProperty("students") && $game.students !== undefined}
 <div class="box">
     <table class="table">
         <thead>

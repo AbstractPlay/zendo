@@ -5,10 +5,11 @@
     import ViewKoan from "../../ViewKoan.svelte";
     import Voters from "./Voters.svelte";
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description,
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -17,12 +18,12 @@
 
     const markKoan = (htbn: boolean) => {
         // If mondo, distribute guessing stones
-        if ($game.koanPending.call === "mondo") {
-            for (const v of $game.koanPending.votes) {
+        if ($game.koanPending!.call === "mondo") {
+            for (const v of $game.koanPending!.votes!) {
                 if (v.vote === htbn) {
-                    const idx = $game.students.findIndex(s => s.id === v.student);
+                    const idx = $game.students!.findIndex(s => s.id === v.student);
                     if (idx !== -1) {
-                        $game.students[idx].guesses++;
+                        $game.students![idx].guesses++;
                     }
                 }
             }
@@ -31,25 +32,25 @@
         if (! $game.hasOwnProperty("koans")) {
             $game.koans = [];
         }
-        $game.koans.push({
-            string: $game.koanPending.koan,
-            htbn: htbn
+        $game.koans!.push({
+            string: $game.koanPending!.koan,
+            htbn,
         });
         // Purge the pending koan
         delete $game.koanPending;
         // Push the game
         $game = $game;
-        pushGame();
+        pushGame(`The master marked the pending koan as ${htbn ? "having" : "not having"} the Buddha nature.`);
     };
 
     const rejectKoan = () => {
         delete $game.koanPending;
         $game = $game;
-        pushGame();
+        pushGame(`The master rejected the pending koan.`);
     };
 </script>
 
-{#if $game.hasOwnProperty("koanPending")}
+{#if $game.hasOwnProperty("koanPending") && $game.koanPending !== undefined}
 <section class="card">
     <header class="card-header">
         <p class="card-header-title">Mark Koan</p>
@@ -65,7 +66,7 @@
         <p>Master has been called! Please mark the koan.</p>
     {/if}
     </div>
-    {#if ( ($game.koanPending.call === "master") || ( ($game.koanPending.hasOwnProperty("votes")) && ($game.koanPending.votes.length * 2 >= $game.students.length) ) )}
+    {#if ( ($game.koanPending.call === "master") || ( ($game.koanPending.hasOwnProperty("votes")) && ($game.koanPending.votes !== undefined) && ($game.students !== undefined) && ($game.koanPending.votes.length * 2 >= $game.students.length) ) )}
         <div class="card-footer">
             <button class="button is-success card-footer-item" on:click="{() => markKoan(true)}">Has</button>
             <button class="button is-danger card-footer-item" on:click="{() => markKoan(false)}">Has NOT</button>

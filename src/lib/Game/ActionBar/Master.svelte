@@ -7,11 +7,14 @@
     import AddKoan from "./AddKoan.svelte";
     import MarkKoan from "./Master/MarkKoan.svelte";
     import ReviewGuess from "./Master/ReviewGuess.svelte";
+    import ChangeColours from "./Master/ChangeColours.svelte";
+    import { colours } from "@/stores/writeColours";
 
-    const pushGame = () => {
+    const pushGame = (description?: string) => {
         const msg: ZendoGameMessages = {
             type: "gameReplace",
-            game: JSON.stringify($game)
+            game: JSON.stringify($game),
+            description,
         }
         for (const p of $peers) {
             p.connection.send(msg);
@@ -19,22 +22,20 @@
     };
 
     let welcomeCommitted = true;
-    const handleWelcomeKeydown = (event) => {
-		if (event.key === 'Enter') {
-            pushGame();
-            welcomeCommitted = true;
-        }
+    const saveWelcomeMsg = () => {
+        pushGame(`Welcome message updated.`);
+        welcomeCommitted = true;
     }
 
     let selectedObserver = "";
     const admit = () => {
         if (selectedObserver.length > 0) {
-            if (! $game.hasOwnProperty("students")) {
+            if ( (! $game.hasOwnProperty("students")) || ($game.students === undefined) ) {
                 $game.students = [];
             }
             $game.students.push({id: selectedObserver, guesses: 0});
             $game = $game;
-            pushGame();
+            pushGame(`|${selectedObserver}| was admitted to the dojo.`);
         }
     };
 
@@ -42,8 +43,12 @@
     const chooseType = () => {
         if ( (koanType === "text") || (koanType === "image") || (koanType === "math") || (koanType === "1dpyramids") || (koanType === "dotmatrix") || (koanType === "graphviz") || (koanType === "2dpyramids") || (koanType === "1dcards") || (koanType === "2dcards") || (koanType === "plantuml") ) {
             $game.koanType = koanType;
+            // set default colours
+            if (koanType.endsWith("pyramids")) {
+                $game.colours = [...$colours.entries()].map(([abbrev, rgb]) => {return {abbreviation: abbrev, hex: rgb}}) as [{abbreviation: string; hex: string}, ...{abbreviation: string; hex: string}[]];
+            }
             $game = $game;
-            pushGame();
+            pushGame(`Koan type set to ${koanType}.`);
         } else {
             alert(`Invalid koan type selected (${koanType}).`)
         }
@@ -53,7 +58,7 @@
 </script>
 
 <div class="box">
-{#if $game.hasOwnProperty("koanType")}
+{#if $game.hasOwnProperty("koanType") && $game.koanType !== undefined}
     <div class="card" id="instructionBox">
         <header class="card-header">
             <p class="card-header-title" on:click="{() => expandInstructions = !expandInstructions}">Instructions</p>
@@ -82,8 +87,9 @@
     <div class="field">
         <label class="label" for="WelcomeMsg">Welcome Message</label>
         <div class="control">
-            <input class="input {welcomeCommitted ? "is-success" : "is-warning"}" type="text" placeholder="Pinned to the top of the play area. Supports Markdown." id="WelcomeMsg" bind:value="{$game.welcome}" on:keydown="{handleWelcomeKeydown}" on:input="{() => welcomeCommitted = false}">
+            <textarea class="textarea {welcomeCommitted ? "is-success" : "is-warning"}" placeholder="Pinned to the top of the play area. Supports Markdown." rows="3" id="WelcomeMsg" bind:value="{$game.welcome}" on:input="{() => welcomeCommitted = false}"></textarea>
         </div>
+        <button class="button" on:click={saveWelcomeMsg}>Save Welcome Message</button>
     </div>
     {#if $observers.length > 0}
         <div class="field">
@@ -102,6 +108,9 @@
             </p>
         </div>
     {/if}
+{#if $game.koanType === "1dpyramids" || $game.koanType === "2dpyramids"}
+    <ChangeColours />
+{/if}
     <AddKoan/>
 
     {#if $game.hasOwnProperty("koanPending")}

@@ -70,6 +70,10 @@
                 },
                 "msg": {
                     "type": "string"
+                },
+                "description": {
+                    "description": "A plain-text description of what has likely changed in the game state",
+                    "type": "string"
                 }
             },
             "required": ["type", "game"],
