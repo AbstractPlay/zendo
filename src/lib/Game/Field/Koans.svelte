@@ -9,7 +9,7 @@
     <div class="column">
         <p class="subtitle">Has</p>
     {#each idxLst as idx}
-        {#if $game.koans[idx].htbn}
+        {#if $game.koans !== undefined && $game.koans[idx].htbn}
             <ViewKoan koanNum={idx}/>
         {/if}
     {/each}
@@ -17,7 +17,7 @@
     <div class="column">
         <p class="subtitle">Has NOT</p>
     {#each idxLst as idx}
-        {#if ! $game.koans[idx].htbn}
+        {#if $game.koans !== undefined && ! $game.koans[idx].htbn}
             <ViewKoan koanNum={idx}/>
         {/if}
     {/each}

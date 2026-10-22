@@ -1,31 +1,42 @@
 <script lang="ts">
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
-    import { peers } from "@/stores/writePeers";
-    import { myName } from "@/stores/writeMyName";
-    import type { ZendoGameMessages } from "@/schemas/messages";
-
-    const pushGame = (description?: string) => {
-        const msg: ZendoGameMessages = {
-            type: "gameReplace",
-            game: JSON.stringify($game),
-            description,
-        }
-        for (const p of $peers) {
-            p.connection.send(msg);
-        }
-    };
+    import { commitGame } from "@/lib/gameSync";
+    import { trySpendGuessingStone, studentStoneCount } from "@/lib/guessingStones";
+    import { toast } from "@zerodevx/svelte-toast";
 
     let modalGuess = "";
     let guessTxt: string;
     const submitGuess = () => {
-        $game.guessPending = {
-            student: $peer.id,
-            guess: guessTxt
-        };
-        $game = $game;
-        pushGame(`|${$peer.id}| has submitted a guess.`);
+        const text = (guessTxt ?? "").trim();
+        if (text.length === 0) {
+            toast.push("Enter a guess before submitting.");
+            return;
+        }
+        if ($game.hasOwnProperty("guessPending") && $game.guessPending !== undefined) {
+            toast.push("A guess is already pending review.");
+            return;
+        }
+        if (studentStoneCount($game, $peer.id) < 1) {
+            toast.push("You need a guessing stone to submit a guess.");
+            return;
+        }
+        const id = $peer.id;
+        const synced = commitGame((g) => {
+            if (!trySpendGuessingStone(g, id)) {
+                return false;
+            }
+            g.guessPending = {
+                student: id,
+                guess: text,
+            };
+        }, `|${id}| has submitted a guess.`);
+        if (!synced) {
+            toast.push("You need a guessing stone to submit a guess.");
+            return;
+        }
         modalGuess = "";
+        guessTxt = "";
     };
 </script>
 

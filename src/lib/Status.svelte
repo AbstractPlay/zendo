@@ -8,6 +8,9 @@
     import { game } from "../stores/writeGame";
     import type { ZendoGameState } from "@/schemas/game";
     import { toast } from '@zerodevx/svelte-toast';
+    import { get } from "svelte/store";
+    import { commitGame, sendGameReplace } from "@/lib/gameSync";
+    import { removeStudentFromGame, shouldSyncRosterOnPeerDisconnect } from "@/lib/roster";
 
     let remotePeer: string;
     const joinClick = () => {
@@ -35,17 +38,22 @@
         // Add handlers
         conn.on("data", (data) => handleMsg(data as ZendoGameMessages, conn.peer));
         conn.on("close", () => {
-            const rec = $peers.find(p => p.id === conn.peer);
+            const peerid = conn.peer;
+            const rec = $peers.find((p) => p.id === peerid);
             if (rec !== undefined) {
-                toast.push(`${rec.alias} is leaving.`)
+                toast.push(`${rec.alias} is leaving.`);
             }
-            peers.update((lst) => deletePeer(lst, conn.peer));
-            if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
-                const idx = $game.students.findIndex(s => s.id === conn.peer);
-                if (idx !== -1) {
-                    $game.students.splice(idx, 1);
-                    $game = $game;
-                }
+            peers.update((lst) => deletePeer(lst, peerid));
+
+            const state = get(game);
+            const connected = get(peers).map((p) => p.id);
+            if (
+                state.students?.some((s) => s.id === peerid) &&
+                shouldSyncRosterOnPeerDisconnect(state, $peer.id, connected)
+            ) {
+                commitGame((g) => {
+                    removeStudentFromGame(g, peerid);
+                }, `|${peerid}| disconnected from the dojo.`);
             }
         });
 
@@ -80,11 +88,7 @@
                 ($game.master === $peer.id)
             )
         ) {
-            msg = {
-                type: "gameReplace",
-                game: JSON.stringify($game)
-            }
-            conn.send(msg);
+            sendGameReplace(conn);
         }
 
         return newlst;
@@ -179,7 +183,20 @@
                     }
                     toast.push(str);
                 }
-                $game = JSON.parse(msg.game) as ZendoGameState;
+                try {
+                    $game = JSON.parse(msg.game) as ZendoGameState;
+                } catch {
+                    console.error("Malformed gameReplace JSON from peer " + peerid);
+                    toast.push("Received invalid game data from a peer; keeping your current game.");
+                }
+            } else if (msg.type === "chat") {
+                const text = msg.msg.trim();
+                if (text.length > 0) {
+                    const preview = text.length > 280 ? text.substring(0, 277) + "..." : text;
+                    toast.push(`${id2name(peerid)}: ${preview}`);
+                }
+            } else if (msg.type === "notifyAbandon") {
+                toast.push(`${id2name(peerid)} abandoned the game and disconnected.`);
             } else if (msg.type === "vote") {
                 if ( ($game.hasOwnProperty("koanPending")) && ($game.koanPending !== undefined) ) {
                     if ( (! $game.koanPending.hasOwnProperty("votes")) || ($game.koanPending.votes === undefined) ) {

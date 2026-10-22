@@ -1,52 +1,40 @@
 <script lang="ts">
-    import { peers } from "@/stores/writePeers";
     import { game } from "@/stores/writeGame";
-    import type {ZendoGameMessages} from "@/schemas/messages";
+    import { commitGame } from "@/lib/gameSync";
     import ViewKoan from "../../ViewKoan.svelte";
     import Voters from "./Voters.svelte";
 
-    const pushGame = (description?: string) => {
-        const msg: ZendoGameMessages = {
-            type: "gameReplace",
-            game: JSON.stringify($game),
-            description,
-        }
-        for (const p of $peers) {
-            p.connection.send(msg);
-        }
-    };
-
     const markKoan = (htbn: boolean) => {
-        // If mondo, distribute guessing stones
-        if ($game.koanPending!.call === "mondo") {
-            for (const v of $game.koanPending!.votes!) {
-                if (v.vote === htbn) {
-                    const idx = $game.students!.findIndex(s => s.id === v.student);
-                    if (idx !== -1) {
-                        $game.students![idx].guesses++;
+        commitGame((g) => {
+            const pending = g.koanPending;
+            if (pending === undefined) {
+                return;
+            }
+            if (pending.call === "mondo") {
+                for (const v of pending.votes ?? []) {
+                    if (v.vote === htbn) {
+                        const idx = g.students?.findIndex((s) => s.id === v.student) ?? -1;
+                        if (idx !== -1 && g.students) {
+                            g.students[idx].guesses++;
+                        }
                     }
                 }
             }
-        }
-        // Add the koan to the list
-        if (! $game.hasOwnProperty("koans")) {
-            $game.koans = [];
-        }
-        $game.koans!.push({
-            string: $game.koanPending!.koan,
-            htbn,
-        });
-        // Purge the pending koan
-        delete $game.koanPending;
-        // Push the game
-        $game = $game;
-        pushGame(`The master marked the pending koan as ${htbn ? "having" : "not having"} the Buddha nature.`);
+            if (!g.koans) {
+                g.koans = [];
+            }
+            g.koans.push({
+                string: pending.koan,
+                htbn,
+            });
+            delete g.koanPending;
+        }, `The master marked the pending koan as ${htbn ? "having" : "not having"} the Buddha nature.`);
     };
 
     const rejectKoan = () => {
-        delete $game.koanPending;
-        $game = $game;
-        pushGame(`The master rejected the pending koan.`);
+        commitGame((g) => {
+            delete g.koanPending;
+        }, `The master rejected the pending koan.`);
     };
 </script>
 

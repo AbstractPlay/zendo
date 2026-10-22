@@ -1,7 +1,17 @@
+import { mount, unmount } from 'svelte'
 import App from './App.svelte'
 
-const app = new App({
-  target: document.getElementById('app')
-})
+const target = document.getElementById('app')
+if (!target) {
+  throw new Error('Missing #app mount element')
+}
+
+const app = mount(App, { target })
 
 export default app
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    unmount(app)
+  })
+}

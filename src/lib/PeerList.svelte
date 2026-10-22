@@ -24,12 +24,15 @@
     };
 
     let expandPeers = true;
-    let newName: string;
-    let clickedPeer: PeerRecord;
+    let newName: string | undefined;
+    let clickedPeer: PeerRecord | undefined;
     let modalRename = "";
     const renamePeer = () => {
+        if (clickedPeer === undefined || newName === undefined) {
+            return;
+        }
         peers.update((lst) => {
-            const idx = lst.findIndex(p => p.id === clickedPeer.id);
+            const idx = lst.findIndex(p => p.id === clickedPeer!.id);
             if (idx !== -1) {
                 lst[idx].alias = newName;
                 lst[idx].locked = true;
@@ -42,8 +45,11 @@
     };
 
     const unlockPeer = () => {
+        if (clickedPeer === undefined) {
+            return;
+        }
         peers.update((lst) => {
-            const idx = lst.findIndex(p => p.id === clickedPeer.id);
+            const idx = lst.findIndex(p => p.id === clickedPeer!.id);
             if (idx !== -1) {
                 lst[idx].locked = false;
             }
@@ -52,7 +58,7 @@
         const msg: ZendoGameMessages = {
             type: "askdisplay"
         };
-        sendDirectMsg(clickedPeer.id, msg);
+        sendDirectMsg(clickedPeer!.id, msg);
         newName = undefined;
         clickedPeer = undefined;
         modalRename = "";
@@ -83,7 +89,7 @@
         <p class="content">Click on a peer to rename them.</p>
         <div class="panel">
             {#each $peers as p}
-                <a target="_self" class="panel-block" href={"#"} data-tooltip="{p.id}" on:click="{() => {clickedPeer = p; newName = clickedPeer.alias; modalRename = "is-active"}}">
+                <a target="_self" class="panel-block" href={"#"} data-tooltip="{p.id}" on:click="{() => {clickedPeer = p; newName = clickedPeer.alias ?? ""; modalRename = "is-active"}}">
                 {#if p.locked}
                     <span class="panel-icon">
                         <i class="fa-solid fa-lock" aria-hidden="true"></i>

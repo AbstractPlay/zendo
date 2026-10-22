@@ -3,18 +3,8 @@
     import { peers } from "@/stores/writePeers";
     import { myName } from "@/stores/writeMyName";
     import { peer } from "@/stores/writePeerObj";
-    import type {ZendoGameMessages} from "@/schemas/messages";
-
-    const pushGame = (description?: string) => {
-        const msg: ZendoGameMessages = {
-            type: "gameReplace",
-            game: JSON.stringify($game),
-            description,
-        }
-        for (const p of $peers) {
-            p.connection.send(msg);
-        }
-    };
+    import { commitGame } from "@/lib/gameSync";
+    import { refundGuessingStone } from "@/lib/guessingStones";
 
     const id2name = (id: string): string => {
         const idx = $peers.findIndex((rec) => rec.id === id);
@@ -32,58 +22,62 @@
     };
 
     let guesser = "";
-    if ( ($game.hasOwnProperty("guessPending")) && ($game.guessPending !== undefined) ) {
+    $: if ($game.hasOwnProperty("guessPending") && $game.guessPending !== undefined) {
         guesser = id2name($game.guessPending.student);
     }
-    peers.subscribe((lst) => {
-        if ( ($game.hasOwnProperty("guessPending")) && ($game.guessPending !== undefined) ) {
-            const id = $game.guessPending.student;
-            const idx = lst.findIndex((rec) => rec.id === id);
-            if (idx !== -1) {
-                if (lst[idx].alias !== undefined) {
-                    return lst[idx].alias;
-                } else {
-                    guesser= id;
-                }
-            } else if (id === $peer.id) {
-                guesser = $myName;
-            } else {
-                guesser = id;
-            }
-        }
-    });
 
     const rejectGuess = () => {
-        delete $game.guessPending;
-        $game = $game;
-        pushGame(`The master rejected the guess.`);
+        commitGame((g) => {
+            const pending = g.guessPending;
+            if (pending === undefined) {
+                return;
+            }
+            refundGuessingStone(g, pending.student);
+            delete g.guessPending;
+        }, `The master rejected the guess.`);
     };
 
     const acceptGuess = (incorrect = true) => {
-        const idx = $game.students!.findIndex(s => s.id === $game.guessPending!.student);
-        if (idx !== -1) {
-            $game.students![idx].guesses--;
-        }
-        if (! $game.hasOwnProperty("guesses")) {
-            $game.guesses = [];
-        }
-        $game.guesses!.push({
-            student: $game.guessPending!.student,
-            guess: $game.guessPending!.guess,
-            index: $game.koans!.length
-        });
-        delete $game.guessPending;
-        $game = $game;
-        pushGame(`The master accepted the guess${incorrect ? " as incorrect" : ""}.`);
+        commitGame((g) => {
+            const pending = g.guessPending;
+            if (pending === undefined) {
+                return;
+            }
+            if (!g.guesses) {
+                g.guesses = [];
+            }
+            g.guesses.push({
+                student: pending.student,
+                guess: pending.guess,
+                index: g.koans!.length,
+            });
+            delete g.guessPending;
+        }, `The master accepted the guess${incorrect ? " as incorrect" : ""}.`);
     };
 
     let modalWin = "";
     const winningGuess = () => {
-        const winner = $game.guessPending!.student;
-        acceptGuess(false);
-        $game.winner = winner;
-        $game = $game;
-        pushGame(`|${winner}| has won!!`);
+        const pending = $game.guessPending;
+        if (pending === undefined) {
+            return;
+        }
+        const winner = pending.student;
+        commitGame((g) => {
+            const p = g.guessPending;
+            if (p === undefined) {
+                return;
+            }
+            if (!g.guesses) {
+                g.guesses = [];
+            }
+            g.guesses.push({
+                student: p.student,
+                guess: p.guess,
+                index: g.koans!.length,
+            });
+            delete g.guessPending;
+            g.winner = winner;
+        }, `|${winner}| has won!!`);
     };
 </script>
 

@@ -22,5 +22,5 @@ The following dojo types are supported:
 * 1d & 2d playing cards
 * dot matrix (coloured dots on rectangular grids)
 * [GraphViz](https://graphviz.org/) (rendered by [dot](https://graphviz.org/docs/layouts/dot/))
-* [PlantUML](https://plantuml.com/) (rendered by PlantUML)
+* [PlantUML](https://plantuml.com/) (rendered in the browser via `@plantuml/core`)
 * math (powered by [KaTeX](https://katex.org/), using TeX/LaTeX notation)

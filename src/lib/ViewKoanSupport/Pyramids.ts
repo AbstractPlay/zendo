@@ -20,7 +20,11 @@ export const defaultColours = new Map<string, string>([
     ["WH", "#ffffff"],
 ]);
 
-export const process1dSvg = (koanStr: string, pyramidColours = defaultColours): string => {
+export const process1dSvg = (
+    koanStr: string,
+    pyramidColours = defaultColours,
+    symbolScope = "",
+): string => {
     // Doing this the dirty but straightforward way of just cobbling together an SVG from pieces.
 
     const pieces = koanStr.toUpperCase().split(/\s+/);
@@ -56,13 +60,13 @@ export const process1dSvg = (koanStr: string, pyramidColours = defaultColours): 
         if ( (dir === undefined) || (dir === "U") ) {
             // Load "up" version
             let insert = pyramidSymbols.get(size)![1];
-            insert = insert.replace(` id="">`, ` id="${colour}${size}UP">`);
+            insert = insert.replace(` id="">`, ` id="${symbolScope}${colour}${size}UP">`);
             insert = insert.replace(`data-playerfill="true"`, `fill="${rgb}"`);
             svgStr += insert;
         } else {
             // Load "flat" version
             let insert = pyramidSymbols.get(size)![0];
-            insert = insert.replace(` id="">`, ` id="${colour}${size}FLAT">`);
+            insert = insert.replace(` id="">`, ` id="${symbolScope}${colour}${size}FLAT">`);
             insert = insert.replace(`data-playerfill="true"`, `fill="${rgb}"`);
             svgStr += insert;
         }
@@ -88,7 +92,7 @@ export const process1dSvg = (koanStr: string, pyramidColours = defaultColours): 
 
         if ( (dir === undefined) || (dir === "U") ) {
             // Place "up" version
-            svgStr += `<use href="#${colour}${size}UP" x="${x}" y="${y}" height="180" width="180"></use>`;
+            svgStr += `<use href="#${symbolScope}${colour}${size}UP" x="${x}" y="${y}" height="180" width="180"></use>`;
         } else {
             // Place "flat" version
             if (["N", "NE", "E", "SE", "S", "SW", "W", "NW"].includes(dir)) {
@@ -120,12 +124,12 @@ export const process1dSvg = (koanStr: string, pyramidColours = defaultColours): 
                         } else if (dir === "NW") {
                             tx = -10; ty = -10;
                         }
-                        svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="translate(${tx} ${ty}) rotate(${deg} ${cx} ${cy})"></use>`;
+                        svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="translate(${tx} ${ty}) rotate(${deg} ${cx} ${cy})"></use>`;
                     } else {
-                        svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="rotate(${deg} ${cx} ${cy})"></use>`;
+                        svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="rotate(${deg} ${cx} ${cy})"></use>`;
                     }
                 } else {
-                    svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180"></use>`;
+                    svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180"></use>`;
                 }
             } else if (! isNaN(parseInt(dir, 10))) {
                 let deg = parseInt(dir, 10);
@@ -136,9 +140,9 @@ export const process1dSvg = (koanStr: string, pyramidColours = defaultColours): 
                     deg += 360;
                 }
                 if (deg !== 0) {
-                    svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="rotate(${deg} ${cx} ${cy})"></use>`;
+                    svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="rotate(${deg} ${cx} ${cy})"></use>`;
                 } else {
-                    svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180"></use>`;
+                    svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180"></use>`;
                 }
             }
         }
@@ -149,7 +153,11 @@ export const process1dSvg = (koanStr: string, pyramidColours = defaultColours): 
     return svgStr;
 };
 
-export const process2dSvg = (koanStr: string, pyramidColours = defaultColours): string => {
+export const process2dSvg = (
+    koanStr: string,
+    pyramidColours = defaultColours,
+    symbolScope = "",
+): string => {
     // Doing this the dirty but straightforward way of just cobbling together an SVG from pieces.
     const rows = koanStr.toUpperCase().split(/\n/);
     let maxpcs = 0;
@@ -190,13 +198,13 @@ export const process2dSvg = (koanStr: string, pyramidColours = defaultColours): 
         if ( (dir === undefined) || (dir === "U") ) {
             // Load "up" version
             let insert = pyramidSymbols.get(size)![1];
-            insert = insert.replace(` id="">`, ` id="${colour}${size}UP">`);
+            insert = insert.replace(` id="">`, ` id="${symbolScope}${colour}${size}UP">`);
             insert = insert.replace(`data-playerfill="true"`, `fill="${rgb}"`);
             svgStr += insert;
         } else {
             // Load "flat" version
             let insert = pyramidSymbols.get(size)![0];
-            insert = insert.replace(` id="">`, ` id="${colour}${size}FLAT">`);
+            insert = insert.replace(` id="">`, ` id="${symbolScope}${colour}${size}FLAT">`);
             insert = insert.replace(`data-playerfill="true"`, `fill="${rgb}"`);
             svgStr += insert;
         }
@@ -224,7 +232,7 @@ export const process2dSvg = (koanStr: string, pyramidColours = defaultColours): 
             if (! ["1", "2", "3"].includes(size)) { continue; }
             if ( (dir === undefined) || (dir === "U") ) {
                 // Place "up" version
-                svgStr += `<use href="#${colour}${size}UP" x="${x}" y="${y}" height="180" width="180"></use>`;
+                svgStr += `<use href="#${symbolScope}${colour}${size}UP" x="${x}" y="${y}" height="180" width="180"></use>`;
             } else {
                 // Place "flat" version
                 if (["N", "NE", "E", "SE", "S", "SW", "W", "NW"].includes(dir)) {
@@ -256,12 +264,12 @@ export const process2dSvg = (koanStr: string, pyramidColours = defaultColours): 
                             } else if (dir === "NW") {
                                 tx = -10; ty = -10;
                             }
-                            svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="translate(${tx} ${ty}) rotate(${deg} ${cx} ${cy})"></use>`;
+                            svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="translate(${tx} ${ty}) rotate(${deg} ${cx} ${cy})"></use>`;
                         } else {
-                            svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="rotate(${deg} ${cx} ${cy})"></use>`;
+                            svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="rotate(${deg} ${cx} ${cy})"></use>`;
                         }
                     } else {
-                        svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180"></use>`;
+                        svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180"></use>`;
                     }
                 } else if (! isNaN(parseInt(dir, 10))) {
                     let deg = parseInt(dir, 10);
@@ -272,9 +280,9 @@ export const process2dSvg = (koanStr: string, pyramidColours = defaultColours): 
                         deg += 360;
                     }
                     if (deg !== 0) {
-                        svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="rotate(${deg} ${cx} ${cy})"></use>`;
+                        svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180" transform="rotate(${deg} ${cx} ${cy})"></use>`;
                     } else {
-                        svgStr += `<use href="#${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180"></use>`;
+                        svgStr += `<use href="#${symbolScope}${colour}${size}FLAT" x="${x}" y="${y}" height="180" width="180"></use>`;
                     }
                 }
             }

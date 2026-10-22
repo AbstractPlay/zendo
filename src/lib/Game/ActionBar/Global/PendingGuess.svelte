@@ -21,30 +21,20 @@
     };
 
     let guesser = "";
-    if ($game.hasOwnProperty("guessPending")) {
+    $: if ($game.hasOwnProperty("guessPending") && $game.guessPending !== undefined) {
         guesser = id2name($game.guessPending.student);
     }
-    peers.subscribe((lst) => {
-        if ($game.hasOwnProperty("guessPending")) {
-            const id = $game.guessPending.student;
-            const idx = lst.findIndex((rec) => rec.id === id);
-            if (idx !== -1) {
-                if (lst[idx].alias !== undefined) {
-                    return lst[idx].alias;
-                } else {
-                    guesser= id;
-                }
-            } else if (id === $peer.id) {
-                guesser = $myName;
-            } else {
-                guesser = id;
-            }
+    $: if ($game.hasOwnProperty("guessPending") && $game.guessPending !== undefined) {
+        const id = $game.guessPending.student;
+        const idx = $peers.findIndex((rec) => rec.id === id);
+        if (idx !== -1 && $peers[idx].alias !== undefined) {
+            guesser = $peers[idx].alias;
         }
-    });
+    }
 
 </script>
 
-{#if $game.hasOwnProperty("guessPending")}
+{#if $game.hasOwnProperty("guessPending") && $game.guessPending !== undefined}
 <div class="card">
     <div class="card-header">
         <p class="card-header-title">

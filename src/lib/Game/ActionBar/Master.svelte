@@ -1,8 +1,7 @@
 <script lang="ts">
     import { Buffer } from "buffer";
-    import type { ZendoGameMessages } from "@/schemas/messages";
     import { game } from "@/stores/writeGame";
-    import { peers } from "@/stores/writePeers";
+    import { commitGame, broadcastGame } from "@/lib/gameSync";
     import { observers } from "@/stores/derivedObservers";
     import AddKoan from "./AddKoan.svelte";
     import MarkKoan from "./Master/MarkKoan.svelte";
@@ -10,45 +9,40 @@
     import ChangeColours from "./Master/ChangeColours.svelte";
     import { colours } from "@/stores/writeColours";
 
-    const pushGame = (description?: string) => {
-        const msg: ZendoGameMessages = {
-            type: "gameReplace",
-            game: JSON.stringify($game),
-            description,
-        }
-        for (const p of $peers) {
-            p.connection.send(msg);
-        }
-    };
-
     let welcomeCommitted = true;
     const saveWelcomeMsg = () => {
-        pushGame(`Welcome message updated.`);
+        broadcastGame(`Welcome message updated.`);
         welcomeCommitted = true;
     }
 
     let selectedObserver = "";
     const admit = () => {
-        if (selectedObserver.length > 0) {
-            if ( (! $game.hasOwnProperty("students")) || ($game.students === undefined) ) {
-                $game.students = [];
-            }
-            $game.students.push({id: selectedObserver, guesses: 0});
-            $game = $game;
-            pushGame(`|${selectedObserver}| was admitted to the dojo.`);
+        if (selectedObserver.length === 0) {
+            return;
         }
+        if ($game.students?.some((s) => s.id === selectedObserver)) {
+            return;
+        }
+        commitGame((g) => {
+            if (!g.students) {
+                g.students = [];
+            }
+            g.students.push({ id: selectedObserver, guesses: 0 });
+        }, `|${selectedObserver}| was admitted to the dojo.`);
     };
 
     let koanType = "text";
     const chooseType = () => {
         if ( (koanType === "text") || (koanType === "image") || (koanType === "math") || (koanType === "1dpyramids") || (koanType === "dotmatrix") || (koanType === "graphviz") || (koanType === "2dpyramids") || (koanType === "1dcards") || (koanType === "2dcards") || (koanType === "plantuml") ) {
-            $game.koanType = koanType;
-            // set default colours
-            if (koanType.endsWith("pyramids")) {
-                $game.colours = [...$colours.entries()].map(([abbrev, rgb]) => {return {abbreviation: abbrev, hex: rgb}}) as [{abbreviation: string; hex: string}, ...{abbreviation: string; hex: string}[]];
-            }
-            $game = $game;
-            pushGame(`Koan type set to ${koanType}.`);
+            const type = koanType;
+            commitGame((g) => {
+                g.koanType = type;
+                if (type.endsWith("pyramids")) {
+                    g.colours = [...$colours.entries()].map(([abbrev, rgb]) => {
+                        return { abbreviation: abbrev, hex: rgb };
+                    }) as [{ abbreviation: string; hex: string }, ...{ abbreviation: string; hex: string }[]];
+                }
+            }, `Koan type set to ${type}.`);
         } else {
             alert(`Invalid koan type selected (${koanType}).`)
         }

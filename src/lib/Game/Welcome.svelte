@@ -9,12 +9,12 @@
             const idx = lst.findIndex((rec) => rec.id === $game.master);
             if (idx !== -1) {
                 if (lst[idx].alias !== undefined) {
-                    masterName = lst[idx].alias;
+                    masterName = lst[idx].alias ?? "";
                 } else {
-                    masterName = $game.master;
+                    masterName = $game.master ?? "";
                 }
             } else {
-                masterName = $game.master;
+                masterName = $game.master ?? "";
             }
         }
     });
@@ -23,12 +23,12 @@
             const idx = $peers.findIndex((rec) => rec.id === state.master);
             if (idx !== -1) {
                 if ($peers[idx].alias !== undefined) {
-                    masterName = $peers[idx].alias;
+                    masterName = $peers[idx].alias ?? "";
                 } else {
-                    masterName = state.master;
+                    masterName = state.master ?? "";
                 }
             } else {
-                masterName = state.master;
+                masterName = state.master ?? "";
             }
         }
     });
@@ -38,7 +38,7 @@
     <header class="message-header">
         <p>Welcome to {masterName}'s dojo!</p>
     </header>
-    <p class="message-body">
+    <div class="message-body">
     {#if $game.hasOwnProperty("koanType")}
         {#if $game.koanType === "image"}
             <p>This is an image dojo.</p>
@@ -65,5 +65,5 @@
     {#if $game.hasOwnProperty("welcome")}
         <SvelteMarkdown source = {$game.welcome} />
     {/if}
-    </p>
+    </div>
 </section>

@@ -4,11 +4,13 @@
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
     import { myName } from "@/stores/writeMyName";
+    import { buildExportGameSnapshot } from "@/lib/exportGame";
     import type { ZendoGameState } from "@/schemas/game";
     import MarkKoan from "./Global/MarkKoan.svelte";
     import PendingGuess from "./Global/PendingGuess.svelte";
     import { Buffer } from "buffer";
     import pako from "pako";
+    import { flushPeerSendBuffers } from "@/lib/gameSync";
 
     const id2name = (id: string): string => {
         const idx = $peers.findIndex((rec) => rec.id === id);
@@ -26,28 +28,26 @@
     };
 
     let modalAbandon = "";
-    const abandonGame = () => {
+    const abandonGame = async () => {
         modalAbandon = "";
-        // Tell everyone that you're leaving
         const msg: ZendoGameMessages = {
-            type: "notifyAbandon"
+            type: "notifyAbandon",
         };
         for (const p of $peers) {
             p.connection.send(msg);
-            while (p.connection.bufferSize > 0) {}
         }
+        await flushPeerSendBuffers();
 
-        // Mark the game as terminated so you can see the final state
         $game.winner = null;
-
-        // Disconnect
+        $game = $game;
         $peer.destroy();
     };
 
     let isStudent = false;
     game.subscribe((obj) => {
-        if (obj.hasOwnProperty("students")) {
-            const idx = obj.students.findIndex(s => s.id === $peer.id);
+        isStudent = false;
+        if (obj.hasOwnProperty("students") && obj.students !== undefined) {
+            const idx = obj.students.findIndex((s) => s.id === $peer.id);
             if (idx !== -1) {
                 isStudent = true;
             }
@@ -59,20 +59,7 @@
     let exportDataStr: string;
     let encoded: string;
     game.subscribe((obj) => {
-        exportedGame = {} as ZendoGameState;
-        if (obj.hasOwnProperty("koanType")) {
-            exportedGame.koanType = obj.koanType;
-        }
-        if (obj.hasOwnProperty("welcome")) {
-            exportedGame.welcome = obj.welcome;
-        }
-        if (obj.hasOwnProperty("guesses")) {
-            exportedGame.guesses = [...obj.guesses];
-            exportedGame.guesses.map(g => g.student = id2name(g.student));
-        }
-        if (obj.hasOwnProperty("koans")) {
-            exportedGame.koans = [...obj.koans];
-        }
+        exportedGame = buildExportGameSnapshot(obj, id2name);
         const compressed = pako.deflate(JSON.stringify(exportedGame));
         encoded = Buffer.from(compressed).toString("base64");
         exportDataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportedGame));
@@ -99,7 +86,7 @@
         <p>It's not your turn yet. Please wait.</p>
     {/if}
     </div>
-{#if ( (isStudent) && ($game.hasOwnProperty("koanPending")) && ($game.koanPending.call === "mondo") )}
+{#if ( (isStudent) && ($game.koanPending !== undefined) && ($game.koanPending.call === "mondo") )}
     <MarkKoan/>
 {/if}
 

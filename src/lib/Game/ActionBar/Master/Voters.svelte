@@ -21,8 +21,12 @@
 
     let voted: string[] = [];
     game.subscribe((obj) => {
-        if ( (obj.hasOwnProperty("koanPending")) && (obj.koanPending.hasOwnProperty("votes")) ) {
-            voted = [...obj.koanPending.votes.map(v => v.student)];
+        if (
+            obj.hasOwnProperty("koanPending") &&
+            obj.koanPending !== undefined &&
+            obj.koanPending.votes !== undefined
+        ) {
+            voted = [...obj.koanPending.votes.map((v) => v.student)];
         } else {
             voted = [];
         }

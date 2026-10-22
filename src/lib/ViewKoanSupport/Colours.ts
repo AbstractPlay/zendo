@@ -23,7 +23,7 @@ export const rgbToInts = (instr: string): [number, number, number] => {
     }
     let individual: string[]|undefined;
     if (str.length === 3) {
-        individual = str.split("");
+        individual = [str[0] + str[0], str[1] + str[1], str[2] + str[2]];
     } else if (str.length === 6) {
         individual = [str.substring(0, 2), str.substring(2, 4), str.substring(4)];
     } else {

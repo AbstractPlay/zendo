@@ -17,7 +17,7 @@
     };
 </script>
 
-{#if $game.hasOwnProperty("koanPending")}
+{#if $game.hasOwnProperty("koanPending") && $game.koanPending !== undefined}
 <section class="card">
     <header class="card-header">
         <p class="card-header-title">Mondo has been called!</p>

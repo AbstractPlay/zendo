@@ -3,7 +3,8 @@
     import { peers } from "@/stores/writePeers";
     import { peer } from "@/stores/writePeerObj";
     import { myName } from "@/stores/writeMyName";
-    import type { ZendoGameMessages } from "@/schemas/messages";
+    import { commitGame } from "@/lib/gameSync";
+    import { removeStudentFromGame } from "@/lib/roster";
 
     const id2name = (id: string): string => {
         const idx = $peers.findIndex((rec) => rec.id === id);
@@ -29,65 +30,42 @@
         return false;
     };
 
-    const pushGame = (description?: string) => {
-        const msg: ZendoGameMessages = {
-            type: "gameReplace",
-            game: JSON.stringify($game),
-            description
-        }
-        for (const p of $peers) {
-            p.connection.send(msg);
-        }
-    };
-
     const giveGuess = (id: string) => {
-        if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
-            const idx = $game.students.findIndex(s => s.id === id);
-            if (idx !== -1) {
-                $game.students[idx].guesses++;
-                $game = $game;
-                pushGame(`|${id}| received a guessing stone.`);
+        commitGame((g) => {
+            const idx = g.students?.findIndex((s) => s.id === id) ?? -1;
+            if (idx !== -1 && g.students) {
+                g.students[idx].guesses++;
             }
-        }
+        }, `|${id}| received a guessing stone.`);
     };
 
     const takeGuess = (id: string) => {
-        if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
-            const idx = $game.students.findIndex(s => s.id === id);
-            if (idx !== -1) {
-                $game.students[idx].guesses--;
-                if ($game.students[idx].guesses < 0) {
-                    $game.students[idx].guesses = 0;
+        commitGame((g) => {
+            const idx = g.students?.findIndex((s) => s.id === id) ?? -1;
+            const row = idx !== -1 ? g.students?.[idx] : undefined;
+            if (row) {
+                row.guesses--;
+                if (row.guesses < 0) {
+                    row.guesses = 0;
                 }
-                $game = $game;
-                pushGame(`|${id}| lost a guessing stone.`);
             }
-        }
+        }, `|${id}| lost a guessing stone.`);
     };
 
     const removeStudent = (id: string) => {
-        if ( ($game.hasOwnProperty("students")) && ($game.students !== undefined) ) {
-            const idx = $game.students.findIndex(s => s.id === id);
-            if (idx !== -1) {
-                $game.students.splice(idx, 1);
-                if ($game.students.length === 0) {
-                    delete $game.students;
-                }
-                $game = $game;
-                pushGame(`|${id}| was removed as a student.`);
-            }
+        if (!$game.students?.some((s) => s.id === id)) {
+            return;
         }
+        commitGame((g) => {
+            removeStudentFromGame(g, id);
+        }, `|${id}| was removed as a student.`);
     };
 
     const makeTurn = (id: string) => {
-        const peer = $peers.find(p => p.id === id);
-        $game.currplayer = id;
-        $game = $game;
-        if (peer !== undefined) {
-            pushGame(`It is now |${id}|'s turn.`);
-        } else {
-            pushGame();
-        }
+        const connected = $peers.find((p) => p.id === id);
+        commitGame((g) => {
+            g.currplayer = id;
+        }, connected !== undefined ? `It is now |${id}|'s turn.` : undefined);
     }
 </script>
 

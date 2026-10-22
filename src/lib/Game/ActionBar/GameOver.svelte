@@ -3,6 +3,7 @@
     import { peers } from "@/stores/writePeers";
     import { peer } from "@/stores/writePeerObj";
     import { myName } from "@/stores/writeMyName";
+    import { buildExportGameSnapshot } from "@/lib/exportGame";
     import type { ZendoGameState } from "@/schemas/game";
     import pako from "pako";
     import { Buffer } from "buffer";
@@ -22,20 +23,7 @@
         }
     };
 
-    let exportedGame = {} as ZendoGameState;
-    if ($game.hasOwnProperty("koanType")) {
-        exportedGame.koanType = $game.koanType;
-    }
-    if ($game.hasOwnProperty("welcome")) {
-        exportedGame.welcome = $game.welcome;
-    }
-    if ($game.hasOwnProperty("guesses")) {
-        exportedGame.guesses = [...$game.guesses];
-        exportedGame.guesses.map(g => g.student = id2name(g.student));
-    }
-    if ($game.hasOwnProperty("koans")) {
-        exportedGame.koans = [...$game.koans];
-    }
+    const exportedGame = buildExportGameSnapshot($game, id2name);
     const compressed = pako.deflate(JSON.stringify(exportedGame));
     const encoded = Buffer.from(compressed).toString("base64");
     let exportDataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportedGame));
@@ -44,7 +32,7 @@
 <div class="box">
     <div class="content">
         <p>The game is over.</p>
-        {#if $game.winner !== null}
+        {#if $game.winner !== null && $game.winner !== undefined}
             <p>The winner was {id2name($game.winner)} ({$game.winner}).</p>
         {:else}
             <p>There was no winner.</p>

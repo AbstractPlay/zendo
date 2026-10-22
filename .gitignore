@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-public/*.wasm
+src/lib/ViewKoanSupport/vendor/viz.js
 
 # Editor directories and files
 .vscode/*

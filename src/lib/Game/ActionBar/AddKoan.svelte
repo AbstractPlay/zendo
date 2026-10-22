@@ -1,33 +1,32 @@
 <script lang="ts">
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
-    import { peers } from "@/stores/writePeers";
     import { rgbToHsv, rgbToInts, sortHSV } from "@/lib/ViewKoanSupport/Colours";
-    import type { ZendoGameMessages } from "@/schemas/messages";
+    import { commitGame } from "@/lib/gameSync";
     import ViewKoan from "../ViewKoan.svelte";
 
     let modalAdd = "";
     let koanStr = "";
-    let placeholder = "Text koans are presented exactly as entered";
-    if ($game.koanType === "image") {
-        placeholder = "Drop your image on the field above to generate this string"
-    } else if ($game.koanType === "math") {
-        placeholder = "Enter in TeX or LaTeX format, without delimiters"
-    } else if ($game.koanType === "1dpyramids") {
-        placeholder = "Enter a series of pyramid designations separated by whitespace";
-    } else if ($game.koanType === "2dpyramids") {
-        placeholder = "Enter a series of pyramid designations, separated by whitespace; use a hyphen for an empty cell";
-    } else if ($game.koanType === "1dcards") {
-        placeholder = "Enter a series of card designations separated by whitespace";
-    } else if ($game.koanType === "2dcards") {
-        placeholder = "Enter a series of card designations separated by whitespace; use a hyphen for an empty cell";
-    } else if ($game.koanType === "dotmatrix") {
-        placeholder = "Enter width, height, and then a string of digits";
-    } else if ($game.koanType === "graphviz") {
-        placeholder = "Type or paste your DOT code"
-    } else if ($game.koanType === "plantuml") {
-        placeholder = "Type or paste your PlantUML code"
-    }
+    $: placeholder =
+        $game.koanType === "image"
+            ? "Drop your image on the field above to generate this string"
+            : $game.koanType === "math"
+              ? "Enter in TeX or LaTeX format, without delimiters"
+              : $game.koanType === "1dpyramids"
+                ? "Enter a series of pyramid designations separated by whitespace"
+                : $game.koanType === "2dpyramids"
+                  ? "Enter a series of pyramid designations, separated by whitespace; use a hyphen for an empty cell"
+                  : $game.koanType === "1dcards"
+                    ? "Enter a series of card designations separated by whitespace"
+                    : $game.koanType === "2dcards"
+                      ? "Enter card codes separated by whitespace; use _ for an empty cell (append - to rotate, e.g. AS-)"
+                      : $game.koanType === "dotmatrix"
+                        ? "Enter width, height, and then a string of digits"
+                        : $game.koanType === "graphviz"
+                          ? "Type or paste your DOT code"
+                          : $game.koanType === "plantuml"
+                            ? "Type or paste your PlantUML code"
+                            : "Text koans are presented exactly as entered";
 
     let files: FileList|undefined;
     $: if (files) {
@@ -43,39 +42,26 @@
         }
     }
 
-    const pushGame = (description?: string) => {
-        const msg: ZendoGameMessages = {
-            type: "gameReplace",
-            game: JSON.stringify($game),
-            description,
-        }
-        for (const p of $peers) {
-            p.connection.send(msg);
-        }
-    };
-
     let hasNature = false;
     let call: "master" | "mondo" = "master";
     const submitKoan = () => {
-        if ($game.koans === undefined) {
-            $game.koans = [];
-        }
-        koanStr = koanStr.replace(/\s+$/, "");
-        // If master is submitting it, go directly to the play area.
-        if ($game.master === $peer.id) {
-            if (! $game.hasOwnProperty("koans")) {
-                $game.koans = [];
+        const trimmed = koanStr.replace(/\s+$/, "");
+        const masterId = $game.master;
+        const myId = $peer.id;
+        const mondo = call === "mondo";
+        commitGame((g) => {
+            if (!g.koans) {
+                g.koans = [];
             }
-            $game.koans.push({string: koanStr, htbn: hasNature});
-        // Otherwise, it goes for review
-        } else {
-            $game.koanPending = {
-                koan: koanStr,
-                call: call
+            if (masterId === myId) {
+                g.koans.push({ string: trimmed, htbn: hasNature });
+            } else {
+                g.koanPending = {
+                    koan: trimmed,
+                    call,
+                };
             }
-        }
-        $game = $game;
-        pushGame(`|${$peer.id}| submitted a koan.${call === "mondo" ? " Mondo has been called!" : ""}`);
+        }, `|${myId}| submitted a koan.${mondo ? " Mondo has been called!" : ""}`);
         modalAdd = "";
         koanStr = "";
         files = undefined;
@@ -161,7 +147,7 @@
                     COLOUR + SIZE + DIRECTION (case insensitive); direction can be a compass direction or an arbitrary integer; for example <code>RD1 BN2E VT3SW GN125</code>.
                 </p>
             {:else if ( ($game.koanType === "1dcards") || ($game.koanType === "2dcards") )}
-                <p class="help">Value: [A2-9TJQK], Suit: [CDHS], Special cards: RJ (red joker), BJ (black joker), BKR (red back), BKB (blue back)</p>
+                <p class="help">Value: [A2-9TJQK], Suit: [CDHS], Special cards: RJ (red joker), BJ (black joker), BKR (red back), BKB (blue back). For 2D layouts use <code>_</code> for an empty cell; append <code>-</code> to a card code for rotation (e.g. <code>AS-</code>).</p>
             {:else if $game.koanType === "dotmatrix"}
                 <p class="help">
                     WIDTH,HEIGHT,CELLS (e.g., 2,2,1001)

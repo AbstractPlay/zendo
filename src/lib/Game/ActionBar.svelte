@@ -20,7 +20,7 @@
     {#if ($game.master === $peer.id)}
         <!-- The person viewing the screen is the master. -->
         <Master/>
-    {:else if (! $peers.map(p => p.id).includes($game.master))}
+    {:else if ($game.master !== undefined && ! $peers.map(p => p.id).includes($game.master))}
         <!-- The game had a master, but the viewer is not connected to the master any more. -->
         <Leaderless/>
     {:else if ( ($game.hasOwnProperty("currplayer")) && ($game.currplayer === $peer.id) )}

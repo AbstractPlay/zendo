@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-10-22
+
+### Fixed
+
+* The play field updates immediately when koans are added or changed—no refresh needed.
+* Exporting a game no longer corrupts live play by rewriting guess records from peer IDs to display names.
+* Fixed a crash when guess history was present but empty.
+* Guessing stones are spent on guess submit and refunded on master reject or student withdraw; accepting a wrong guess no longer spends a second stone.
+* Disconnects update the student roster and turn order for everyone (master syncs, or another peer if the master is offline).
+* Peers see a toast when someone abandons the game.
+* Graphviz and PlantUML koans render in the browser; PlantUML no longer sends your source to plantuml.com.
+* Downloaded SVG koans match what you see on screen (including playing cards).
+* 2D card koans use `_` for an empty cell; a trailing `-` on a token still means rotation.
+
+### Changed
+
+* Koan previews update when you change koan text or pyramid colours; playing-card art loads on demand.
+* Underlying stack upgraded (Svelte 5, Vite 6, KaTeX 0.19, and related dependencies).
+
 ## [v1.4.0] - 2023-12-10
 
 ### Added

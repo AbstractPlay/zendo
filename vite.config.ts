@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import * as path from "path";
@@ -21,5 +22,9 @@ export default defineConfig({
         find: "@", replacement: path.resolve("./src")
       }
     ]
-  }
+  },
+  test: {
+    environment: "node",
+    include: ["test/**/*.test.ts"],
+  },
 })

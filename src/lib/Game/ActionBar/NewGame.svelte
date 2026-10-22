@@ -1,8 +1,7 @@
 <script lang="ts">
     import { game } from "@/stores/writeGame";
     import { peer } from "@/stores/writePeerObj";
-    import { peers } from "@/stores/writePeers";
-    import type { ZendoGameMessages } from "@/schemas/messages";
+    import { commitGame } from "@/lib/gameSync";
     import type { ZendoGameState } from "@/schemas/game";
     import { onMount } from "svelte";
     import { Buffer } from "buffer";
@@ -19,20 +18,11 @@
         });
     });
 
-    const pushGame = (description?: string) => {
-        const msg: ZendoGameMessages = {
-            type: "gameReplace",
-            game: JSON.stringify($game),
-            description,
-        }
-        for (const p of $peers) {
-            p.connection.send(msg);
-        }
-    };
-
     const becomeMaster = () => {
-        $game.master = $peer.id;
-        pushGame(`|${$peer.id}| has become the master.`);
+        const id = $peer.id;
+        commitGame((g) => {
+            g.master = id;
+        }, `|${id}| has become the master.`);
     };
 
     let modalImport = "";
@@ -55,18 +45,20 @@
             if ( (! obj.hasOwnProperty("koanType")) || (obj.koanType === undefined) ) {
                 return;
             }
-            $game.master = $peer.id;
-            $game.koanType = obj.koanType;
-            if ( (obj.hasOwnProperty("welcome")) && (obj.welcome !== undefined) ) {
-                $game.welcome = obj.welcome;
-            }
-            if ( (obj.hasOwnProperty("guesses")) && (obj.guesses !== undefined) ) {
-                $game.guesses = [...obj.guesses];
-            }
-            if ( (obj.hasOwnProperty("koans")) && (obj.koans !== undefined) ) {
-                $game.koans = [...obj.koans];
-            }
-            pushGame(`|${$peer.id}| has imported a game.`);
+            const id = $peer.id;
+            commitGame((g) => {
+                g.master = id;
+                g.koanType = obj.koanType;
+                if (obj.welcome !== undefined) {
+                    g.welcome = obj.welcome;
+                }
+                if (obj.guesses !== undefined) {
+                    g.guesses = [...obj.guesses];
+                }
+                if (obj.koans !== undefined) {
+                    g.koans = [...obj.koans];
+                }
+            }, `|${id}| has imported a game.`);
             modalImport = "";
         }
     };
