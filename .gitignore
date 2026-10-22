@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-src/lib/ViewKoanSupport/vendor/viz.js
+vendor/graphviz/viz.js
 
 # Editor directories and files
 .vscode/*

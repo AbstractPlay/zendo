@@ -4,8 +4,8 @@ let vizPromise: Promise<Viz> | undefined;
 
 export function loadGraphviz(): Promise<Viz> {
     if (vizPromise === undefined) {
-        vizPromise = import("./vendor/viz.js").then((m: { instance: () => Promise<Viz> }) =>
-            m.instance(),
+        vizPromise = import("../../../vendor/graphviz/viz.js").then((m) =>
+            m.instance() as unknown as Promise<Viz>,
         );
     }
     return vizPromise;

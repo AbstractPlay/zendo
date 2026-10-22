@@ -30,7 +30,7 @@ flowchart LR
 
 ## ViewKoan
 
-[`ViewKoan.svelte`](src/lib/Game/ViewKoan.svelte) + [`viewKoanRender.ts`](src/lib/viewKoanRender.ts) + [`ViewKoanSupport/`](src/lib/ViewKoanSupport/). Reactive math (KaTeX), pyramids/dot matrix/cards; lazy `Cards.ts` and diagram modules. Per-instance `koanSvgScope` for SVG fragment ids. Graphviz: vendored `@viz-js/viz` (`npm run copy-graphviz` → `vendor/viz.js`, [`Graphviz.ts`](src/lib/ViewKoanSupport/Graphviz.ts)). PlantUML: [`Plantuml.ts`](src/lib/ViewKoanSupport/Plantuml.ts) (`@plantuml/core`, sets `PLANTUML_VIZ`). SVG download via Blob.
+[`ViewKoan.svelte`](src/lib/Game/ViewKoan.svelte) + [`viewKoanRender.ts`](src/lib/viewKoanRender.ts) + [`ViewKoanSupport/`](src/lib/ViewKoanSupport/). Reactive math (KaTeX), pyramids/dot matrix/cards; lazy `Cards.ts` and diagram modules. Per-instance `koanSvgScope` for SVG fragment ids. Graphviz: vendored `@viz-js/viz` (`npm run copy-graphviz` → `vendor/graphviz/viz.js`, [`Graphviz.ts`](src/lib/ViewKoanSupport/Graphviz.ts)). PlantUML: [`Plantuml.ts`](src/lib/ViewKoanSupport/Plantuml.ts) (`@plantuml/core`, sets `PLANTUML_VIZ`). SVG download via Blob.
 
 ## Guessing stones
 
